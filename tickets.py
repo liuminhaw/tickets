@@ -11,6 +11,8 @@
 #   5 - Auto form filling error
 #
 #   11 - CONFIG section empty error
+#   13 - DRIVER section config error
+#   15 - Error in puyoma key
 
 import sys, os
 import datetime, time
@@ -58,13 +60,10 @@ def main():
             logger.info('No section set to be read')
             sys.exit(11)
 
-    # thread_one = threading.Thread(target=_auto_run, args=[target_time, 'INFO03'])
-    # thread_one.start()
-    #
-    # time.sleep(15)
-    #
-    # thread_two = threading.Thread(target=_auto_run, args=[target_time, 'INFO04'])
-    # thread_two.start()
+    # Press Enter to quit
+    input('Enter')
+
+
 
 
 # Get target sections
@@ -82,7 +81,14 @@ def _target_sections():
 def _auto_run(target_time, section):
     config = confcl.Config('train_tickets.ini')
 
-    driver = webdriver.Firefox()
+    # Web-driver type
+    if config.web_driver().lower() == 'chrome':
+        driver = webdriver.Chrome()
+    elif config.web_driver().lower() == 'firefox':
+        driver = webdriver.Firefox()
+    else:
+        logger.warning('Not supported web-driver type, please check for .ini config file setting.')
+        sys.exit(13)
 
     # Connect to url
     for _ in range(5):
@@ -107,8 +113,15 @@ def _auto_run(target_time, section):
     _select_input(driver, 'to_station', config.to_station(section))
     _text_input(driver, 'train_no', config.train_number(section))
     _elem_click(driver, 'label[for="order_qty_str"]')
-    # _select_input(driver, 'n_order_qty_str', config.quantity(section))
-    _select_input(driver, 'order_qty_str', config.quantity(section))
+
+    # Check train type
+    if config.is_puyoma(section).lower() == 'yes':
+        _select_input(driver, 'n_order_qty_str', config.quantity(section))
+    elif config.is_puyoma(section).lower() == 'no':
+        _select_input(driver, 'order_qty_str', config.quantity(section))
+    else:
+        logger.warning('Error exist in section {} of .ini config file.'.format(section))
+        sys.exit(15)
 
     _elem_click(driver, 'button[type="submit"]')
     _elem_click(driver, '#randInput')
@@ -119,6 +132,8 @@ def _auto_run(target_time, section):
     _elem_click(driver, '#sbutton')
 
     _geckolog_clean('geckodriver.log')
+
+    # input("Enter")
 
 
 # Decorator

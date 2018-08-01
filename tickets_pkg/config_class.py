@@ -10,6 +10,7 @@ Version:
 import sys
 import configparser
 from tickets_pkg import logging_class as logcl
+# import logging_class as logcl
 
 logger = logcl.PersonalLog('config_class')
 
@@ -27,12 +28,14 @@ class Config():
             11 - Some needed key not exist in ini files
         """
 
+        self.WEB_DRIVER = 'web driver'
         self.ID = 'person id'
         self.DATE = 'date'
         self.FROM_STATION = 'from station'
         self.TO_STATION = 'to station'
         self.TRAIN_NO = 'train number'
         self.QUANTITY = 'quantity'
+        self.TRAIN_TYPE = 'puyoma'
 
         # Get config information
         self._config = configparser.ConfigParser()
@@ -70,6 +73,9 @@ class Config():
     #         return user_agent
     #     else:
     #         return self._user_agent
+    def web_driver(self):
+        config_section = self._read_section('DRIVER')
+        return self._read_key(config_section, self.WEB_DRIVER)
 
     def target_sections(self):
         config_section = self._read_section('CONFIG')
@@ -79,7 +85,6 @@ class Config():
             sections.append(config_section[section])
 
         return sections
-
 
     def id(self, section):
         config_section = self._read_section(section)
@@ -105,6 +110,9 @@ class Config():
         config_section = self._read_section(section)
         return self._read_key(config_section, self.QUANTITY)
 
+    def is_puyoma(self, section):
+        config_section = self._read_section(section)
+        return self._read_key(config_section, self.TRAIN_TYPE)
 
 
     def _read_section(self, name):
@@ -118,7 +126,7 @@ class Config():
         try:
             section = self._config[name]
         except:
-            logger.warning('Cannot find {} section in .ini files.')
+            logger.warning('Cannot find {} section in .ini files.'.format(name))
             sys.exit(3)
         else:
             return section
@@ -148,7 +156,10 @@ class Config():
 
 
 if __name__ == '__main__':
-    config = Config('.train_tickets.ini')
+    config = Config('train_tickets.ini')
+
+    print(config.web_driver())
+    print(config.target_sections())
 
     print(config.id('INFO01'))
     print(config.date('INFO01'))
@@ -156,3 +167,4 @@ if __name__ == '__main__':
     print(config.to_station('INFO01'))
     print(config.train_number('INFO01'))
     print(config.quantity('INFO01'))
+    print(config.is_puyoma('INFO01'))
