@@ -48,6 +48,9 @@ def main():
     sections = _target_sections()
     threads = []
 
+    # Program auto countdown
+    _countdown_prep(target_time, sections)
+
     for section in sections[:-1]:
         threads.append(threading.Thread(target=_auto_run, args=[target_time, section]))
         threads[-1].start()
@@ -77,6 +80,23 @@ def _target_sections():
     return sections
 
 
+def _countdown_prep(target_time, sections):
+    """
+    Program countdown before firing web-driver
+    Input:
+        sections - List of sections in config .ini file
+    """
+    if sections == []:
+        logger.info('No section set to be read, please check the config file.')
+        sys.exit(11)
+
+    delta_time = datetime.timedelta(seconds=len(sections) * 15)
+    prepare_time = target_time - delta_time
+
+    while datetime.datetime.now() < prepare_time:
+        time.sleep(1)
+
+
 # Automation function
 def _auto_run(target_time, section):
     config = confcl.Config('train_tickets.ini')
@@ -98,6 +118,9 @@ def _auto_run(target_time, section):
             continue
         else:
             break
+
+    # Focus on browser window
+    driver.switch_to_window(driver.current_window_handle)
 
     # Test for success connection
     try:
@@ -133,7 +156,6 @@ def _auto_run(target_time, section):
 
     _geckolog_clean('geckodriver.log')
 
-    # input("Enter")
 
 
 # Decorator

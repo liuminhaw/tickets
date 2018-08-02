@@ -11,17 +11,15 @@ Use `train_tickets.ini` to setup tickets information
 ### In Development
 
 ##### Steps
-- Setup `train_tickets.ini`
-- Modify `timer.sh` timer
-- Modify `tickets.py` sleep time if needed
-- Run `timer.sh` script
+- Setup `train_tickets.ini` configuration file.
+- Run `tickets.py`.
 
-##### Command
+##### Commands
 
-##### timer.sh
-Set target time to run program
+##### tickets.py
+Give target time as argument to run the program
 
-    timer.sh YYYY-MM-DD HH:MM:SS
+    tickets.py YYYY-MM-DD HH:MM:SS
 
 #### CAUTION NOTE
-Still in development, only works for single way ticket for now.
+Still in development, only works for single way ticket now.
