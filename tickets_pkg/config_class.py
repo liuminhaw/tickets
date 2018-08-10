@@ -29,6 +29,7 @@ class Config():
         """
 
         self.WEB_DRIVER = 'web driver'
+        self.TIME_INTERVAL = 'time interval'
         self.ID = 'person id'
         self.DATE = 'date'
         self.FROM_STATION = 'from station'
@@ -46,36 +47,13 @@ class Config():
             logger.warning('No config file found')
             sys.exit(1)
 
-        # Set default directory
-        # try:
-        #     self._config.set(self.DEFAULT_SEC, self.DIRECTORY, os.path.join(HOME,self.DEFAULT_DIR))
-        # except NoSectionError:
-        #     logger.warning('Cannot find {} section in ini files.'.format(self.DEFAULT_SEC))
-        #     sys.exit(5)
-
-        # Write directory option setting to file
-        # self._write_file()
-
-        # Set section
-        # try:
-        #     self._config_section = self._config[self.CONFIG_SEC]
-        # except KeyError:
-        #     logger.warning('Cannot find {} section in ini files.'.format(self.CONFIG_SEC))
-        #     sys.exit(3)
-
-
-    # def useragent(self):
-    #     user_agent = agentcl.UserAgent().random_computer()
-    #
-    #     if len(user_agent) != 0:
-    #         self._config.set(self.CONFIG_SEC, self.USERAGENT, user_agent)
-    #         self._write_file()
-    #         return user_agent
-    #     else:
-    #         return self._user_agent
     def web_driver(self):
         config_section = self._read_section('DRIVER')
         return self._read_key(config_section, self.WEB_DRIVER)
+
+    def time_interval(self):
+        config_section = self._read_section('DRIVER')
+        return self._read_key(config_section, self.TIME_INTERVAL)
 
     def target_sections(self):
         config_section = self._read_section('CONFIG')
@@ -145,14 +123,6 @@ class Config():
             sys.exit(11)
         else:
             return value
-
-    # def _write_file(self):
-    #     """
-    #     Write config settings to file
-    #     """
-    #     for file in self._config_found:
-    #         with open(file, 'w') as config_file:
-    #             self._config.write(config_file)
 
 
 if __name__ == '__main__':
