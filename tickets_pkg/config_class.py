@@ -47,6 +47,9 @@ class Config():
             logger.warning('No config file found')
             sys.exit(1)
 
+        # Check config file format
+        self._check()
+
     def web_driver(self):
         config_section = self._read_section('DRIVER')
         return self._read_key(config_section, self.WEB_DRIVER)
@@ -91,6 +94,28 @@ class Config():
     def is_puyoma(self, section):
         config_section = self._read_section(section)
         return self._read_key(config_section, self.TRAIN_TYPE)
+
+    def _check(self):
+
+        # Valid web driver
+        if self.web_driver().lower() != 'chrome' and self.web_driver().lower() != 'firefox':
+            logger.warning('Config web driver not supported type.')
+            sys.exit(23)
+
+        # Valid time interval
+        try:
+            int(self.time_interval())
+        except ValueError:
+            logger.warning('Config time interval format error.')
+            sys.exit(21)
+
+        # Valid list of sections in CONFIG
+        if self.target_sections() == []:
+            logger.warning('No section set to be read in CONFIG.')
+            sys.exit(25)
+
+        # Each section check
+        
 
 
     def _read_section(self, name):

@@ -12,12 +12,12 @@
 #   7 - Requesting site error
 #
 #   11 - CONFIG section empty error
-#   13 - DRIVER section config error
 #   15 - Error in puyoma key
 #   17 - Error in date key
 #
 #   21 - Config file time interval format error
 #   23 - Config file web driver type error
+#   25 - CONFIG section empty error
 
 import sys, os
 import datetime, time
@@ -33,6 +33,7 @@ from tickets_pkg import logging_class as logcl
 from tickets_pkg import config_class as confcl
 
 
+SITE = 'http://railway.hinet.net/Foreign/TW/etno1.html'
 CONFIG_FILE = 'train_tickets.ini'
 
 logger = logcl.PersonalLog('tickets')
@@ -56,13 +57,11 @@ def main():
     # Get target sections
     threads = []
     sections = _target_sections()
-    if sections == []:
-        logger.info('No section set to be rerad, please check the config file.')
-        sys.exit(11)
+    # if sections == []:
+    #     logger.info('No section set to be read, please check the config file.')
+    #     sys.exit(11)
 
     # Configuration information
-    # config = confcl.Config(CONFIG_FILE)
-    _check_config(sections)
     interval = int(config.time_interval())
 
     # Program auto countdown
@@ -97,22 +96,6 @@ def _target_sections():
     return sections
 
 
-# Check config file data format
-def _check_config(sections):
-
-    # Valid web driver
-    if config.web_driver().lower() != 'chrome' and config.web_driver().lower() != 'firefox':
-        logger.warning('Config web driver not supported type.')
-        sys.exit(23)
-    # Valid time interval
-
-    try:
-        int(config.time_interval())
-    except ValueError:
-        logger.warning('Config time interval format error.')
-        sys.exit(21)
-
-
 # Countdown before web browser launch
 def _countdown_prep(target_time, sections):
     """
@@ -144,7 +127,7 @@ def _auto_run(target_time, section):
     # Connect to url
     for _ in range(5):
         try:
-            driver.get('http://railway.hinet.net/Foreign/TW/etno1.html')
+            driver.get(SITE)
         except:
             continue
         else:
@@ -162,24 +145,6 @@ def _auto_run(target_time, section):
 
     # Form filling
     _fill_form(driver, config, section)
-    # _text_input(driver, 'person_id', config.id(section))
-    # _select_input(driver, 'getin_date', config.date(section))
-    # _select_input(driver, 'from_station', config.from_station(section))
-    # _select_input(driver, 'to_station', config.to_station(section))
-    # _text_input(driver, 'train_no', config.train_number(section))
-    # _elem_click(driver, 'label[for="order_qty_str"]')
-
-    # Check train type
-    # if config.is_puyoma(section).lower() == 'yes':
-    #     _select_input(driver, 'n_order_qty_str', config.quantity(section))
-    # elif config.is_puyoma(section).lower() == 'no':
-    #     _select_input(driver, 'order_qty_str', config.quantity(section))
-    # else:
-    #     logger.warning('Error exist in section {} of .ini config file.'.format(section))
-    #     sys.exit(15)
-    #
-    # _elem_click(driver, 'button[type="submit"]')
-    # _elem_click(driver, '#randInput')
 
     while datetime.datetime.now() < target_time:
         time.sleep(0.3)
@@ -192,7 +157,7 @@ def _auto_run(target_time, section):
 def _fill_form(driver, config, section):
 
     # Find date matching option
-    req = requests.get('http://railway.hinet.net/Foreign/TW/etno1.html')
+    req = requests.get(SITE)
     try:
         req.raise_for_status()
     except:
