@@ -10,6 +10,7 @@ Version:
 import sys
 import configparser
 from tickets_pkg import logging_class as logcl
+from tickets_pkg import identifier
 # import logging_class as logcl
 
 logger = logcl.PersonalLog('config_class')
@@ -26,6 +27,15 @@ class Config():
             5 - DEFAULT section not exist
 
             11 - Some needed key not exist in ini files
+
+            21 - Time interval config error
+            22 - Web driver config error
+            23 - No section read error
+            24 - Personal ID config error
+            25 - Date config error
+            26 - Train number config error
+            27 - Ticket quantity config error
+            28 - Puyoma type config error
         """
 
         self.WEB_DRIVER = 'web driver'
@@ -98,24 +108,46 @@ class Config():
     def _check(self):
 
         # Valid web driver
-        if self.web_driver().lower() != 'chrome' and self.web_driver().lower() != 'firefox':
+        if not identifier.webdriver_check(self.web_driver()):
             logger.warning('Config web driver not supported type.')
-            sys.exit(23)
+            sys.exit(22)
 
         # Valid time interval
-        try:
-            int(self.time_interval())
-        except ValueError:
+        if not identifier.time_interval_check(self.time_interval()):
             logger.warning('Config time interval format error.')
             sys.exit(21)
 
         # Valid list of sections in CONFIG
-        if self.target_sections() == []:
+        if not identifier.section_exist_check(self.target_sections()):
             logger.warning('No section set to be read in CONFIG.')
-            sys.exit(25)
+            sys.exit(23)
 
         # Each section check
-        
+        for section in self.target_sections():
+            # Valid personal id
+            if not identifier.id_check(self.id(section)):
+                logger.warning('Invalid ID in section {}'.format(section))
+                sys.exit(24)
+
+            # Valid date value
+            if not identifier.date_check(self.date(section)):
+                logger.warning('Invalid date in section {}'.format(section))
+                sys.exit(25)
+
+            # Valid train number
+            if not identifier.train_number_check(self.train_number(section)):
+                logger.warning('Invalid train number in section {}'.format(section))
+                sys.exit(26)
+
+            # Valid quantity
+            if not identifier.quantity_check(self.quantity(section)):
+                logger.warning('Invalid quantity in section {}'.format(section))
+                sys.exit(27)
+
+            # Valid puyoma
+            if not identifier.puyoma_check(self.is_puyoma(section)):
+                logger.warning('Invalid puyoma type choice in section {}'.format(section))
+                sys.exit(28)
 
 
     def _read_section(self, name):
