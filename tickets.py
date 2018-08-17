@@ -14,6 +14,7 @@
 #   11 - CONFIG section empty error
 #   15 - Error in puyoma key
 #   17 - Error in date key
+#   19 - Error in station key
 #
 #   21 - Config file time interval format error
 #   23 - Config file web driver type error
@@ -80,7 +81,7 @@ def main():
             sys.exit(11)
 
     # Press Enter to quit
-    input('Enter')
+    input('Enter to quit.')
 
 
 
@@ -144,7 +145,7 @@ def _auto_run(target_time, section):
         sys.exit(3)
 
     # Form filling
-    _fill_form(driver, config, section)
+    _fill_form(driver, section)
 
     while datetime.datetime.now() < target_time:
         time.sleep(0.3)
@@ -154,31 +155,37 @@ def _auto_run(target_time, section):
     _geckolog_clean('geckodriver.log')
 
 
-def _fill_form(driver, config, section):
+def _fill_form(driver, section):
+
+    # Convert config data for form filling
+    date_value, from_station_value, to_station_value = _data_to_form(section)
 
     # Find date matching option
-    req = requests.get(SITE)
-    try:
-        req.raise_for_status()
-    except:
-        logger.info('Request to get railway page failed.')
-        sys.exit(7)
-
-    req.encoding = 'utf-8'
-    soup = BeautifulSoup(req.text, 'html.parser')
-
-    re_date = re.compile(r'{}.{{3}}'.format(config.date(section)))
-    try:
-        date_value = soup.find('option', {'value': re_date})['value']
-    except TypeError:
-        logger.warning('Cannot find matching date {} of {}'.format(config.date(section), section))
-        sys.exit(17)
+    # req = requests.get(SITE)
+    # try:
+    #     req.raise_for_status()
+    # except:
+    #     logger.info('Request to get railway page failed.')
+    #     sys.exit(7)
+    #
+    # req.encoding = 'utf-8'
+    # soup = BeautifulSoup(req.text, 'html.parser')
+    #
+    # re_date = re.compile(r'{}.{{3}}'.format(config.date(section)))
+    # re_from_station = re.compile(r'\d\d\d-{}'.format(config.from_station(section)))
+    # re_to_station = re.compile(r'\d\d\d-{}'.format(config.to_station(section)))
+    #
+    # try:
+    #     date_value = soup.find('option', {'value': re_date})['value']
+    # except TypeError:
+    #     logger.warning('Cannot find matching date {} of {}'.format(config.date(section), section))
+    #     sys.exit(17)
 
     # Filling form
     _text_input(driver, 'person_id', config.id(section))
     _select_input(driver, 'getin_date', date_value)
-    _select_input(driver, 'from_station', config.from_station(section))
-    _select_input(driver, 'to_station', config.to_station(section))
+    _select_input(driver, 'from_station', from_station_value)
+    _select_input(driver, 'to_station', to_station_value)
     _text_input(driver, 'train_no', config.train_number(section))
     _elem_click(driver, 'label[for="order_qty_str"]')
 
@@ -193,6 +200,55 @@ def _fill_form(driver, config, section):
 
     _elem_click(driver, 'button[type="submit"]')
     _elem_click(driver, '#randInput')
+
+
+def _data_to_form(section):
+    """
+    Convert config information to data that can be use by ticket form
+
+    Return:
+        (date, from_station, to_station)
+    """
+
+    # Attempt to request for web page
+    for attempt in range(5):
+        req = requests.get(SITE)
+
+        try:
+            req.raise_for_status()
+        except:
+            logger.info('Request for railway page failed.')
+            time.sleep(0.5)
+        else:
+            req.encoding = 'utf-8'
+            soup = BeautifulSoup(req.text, 'html.parser')
+            break
+
+    # Regex define
+    re_date = re.compile(r'{}.{{3}}'.format(config.date(section)))
+    re_from_station = re.compile(r'\d\d\d-{}'.format(config.from_station(section)))
+    re_to_station = re.compile(r'\d\d\d-{}'.format(config.to_station(section)))
+
+    # Pattern matching
+    try:
+        date_value = soup.find('option', {'value': re_date})['value']
+    except TypeError:
+        logger.warning('Cannot find matching date {} of {}'.format(config.date(section), section))
+        sys.exit(17)
+
+    try:
+        from_station_value = soup.find('option', string=re_from_station)['value']
+    except TypeError:
+        logger.warning('Cannot find matching staion {} of {}'.format(config.from_station(section), section))
+        sys.exit(19)
+
+    try:
+        to_station_value = soup.find('option', string=re_to_station)['value']
+    except TypeError:
+        logger.warning('Cannot find matching staion {} of {}'.format(config.to_station(section), section))
+        sys.exit(19)
+
+    return (date_value, from_station_value, to_station_value)
 
 
 # Decorator

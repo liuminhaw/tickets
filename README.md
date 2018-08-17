@@ -3,13 +3,13 @@
 Buy Taiwan railway tickets
 
 #### Additional Requirement
-`geckodriver` need to be installed before program can be run
+`web-driver` for `selenium` need to be installed before use.
 
 #### Configuration
 Use `train_tickets.ini` to setup tickets information  
 Configuration file format can be referenced in `train_template.ini`
 
-### In Development
+### Version 1.0.0
 
 ##### Steps
 - Setup `train_tickets.ini` configuration file.
@@ -21,6 +21,3 @@ Configuration file format can be referenced in `train_template.ini`
 Give target time as argument to run the program
 
     tickets.py YYYY-MM-DD HH:MM:SS
-
-#### NOTE
-For one way ticket only
