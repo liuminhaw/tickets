@@ -12,7 +12,7 @@
 #   7 - Requesting site error
 #
 #   11 - CONFIG section empty error
-#   15 - Error in puyoma key
+#   15 - Error in finding quantity input
 #   17 - Error in date key
 #   19 - Error in station key
 #
@@ -81,9 +81,11 @@ def main():
             sys.exit(11)
 
     # Press Enter to quit
-    input('Enter to quit.')
+    input('Enter to quit.\n')
 
-
+    # Close threads
+    for thread in threads:
+        thread.current_state = False
 
 
 # Get target sections
@@ -154,32 +156,18 @@ def _auto_run(target_time, section):
 
     _geckolog_clean('geckodriver.log')
 
+    # Thread cleaning
+    thread = threading.current_thread()
+    while getattr(thread, "current_state", True):
+        time.sleep(0.3)
+    driver.close()
+
 
 def _fill_form(driver, section):
 
     # Convert config data for form filling
     date_value, from_station_value, to_station_value = _data_to_form(section)
 
-    # Find date matching option
-    # req = requests.get(SITE)
-    # try:
-    #     req.raise_for_status()
-    # except:
-    #     logger.info('Request to get railway page failed.')
-    #     sys.exit(7)
-    #
-    # req.encoding = 'utf-8'
-    # soup = BeautifulSoup(req.text, 'html.parser')
-    #
-    # re_date = re.compile(r'{}.{{3}}'.format(config.date(section)))
-    # re_from_station = re.compile(r'\d\d\d-{}'.format(config.from_station(section)))
-    # re_to_station = re.compile(r'\d\d\d-{}'.format(config.to_station(section)))
-    #
-    # try:
-    #     date_value = soup.find('option', {'value': re_date})['value']
-    # except TypeError:
-    #     logger.warning('Cannot find matching date {} of {}'.format(config.date(section), section))
-    #     sys.exit(17)
 
     # Filling form
     _text_input(driver, 'person_id', config.id(section))
@@ -190,12 +178,15 @@ def _fill_form(driver, section):
     _elem_click(driver, 'label[for="order_qty_str"]')
 
     # Check train type
-    if config.is_puyoma(section).lower() == 'yes':
-        _select_input(driver, 'n_order_qty_str', config.quantity(section))
-    elif config.is_puyoma(section).lower() == 'no':
+    try:
         _select_input(driver, 'order_qty_str', config.quantity(section))
-    else:
-        logger.warning('Error exist in section {} of .ini config file.'.format(section))
+    except:
+        pass
+
+    try:
+        _select_input(driver, 'n_order_qty_str', config.quantity(section))
+    except:
+        logger.warning('Page content may have changed, program need to be fixed.')
         sys.exit(15)
 
     _elem_click(driver, 'button[type="submit"]')
@@ -266,17 +257,17 @@ def form_attempt(func):
     return func
 
 
-@form_attempt
+# @form_attempt
 def _text_input(driver, id, text):
     elem = driver.find_element_by_id(id)
     elem.send_keys(text)
 
-@form_attempt
+# @form_attempt
 def _select_input(driver, id, value):
     elem = Select(driver.find_element_by_id(id))
     elem.select_by_value(value)
 
-@form_attempt
+# @form_attempt
 def _elem_click(driver, selector):
     elem = driver.find_element_by_css_selector(selector)
     elem.click()

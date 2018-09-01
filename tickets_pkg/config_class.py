@@ -101,9 +101,9 @@ class Config():
         config_section = self._read_section(section)
         return self._read_key(config_section, self.QUANTITY)
 
-    def is_puyoma(self, section):
-        config_section = self._read_section(section)
-        return self._read_key(config_section, self.TRAIN_TYPE)
+    # def is_puyoma(self, section):
+    #     config_section = self._read_section(section)
+    #     return self._read_key(config_section, self.TRAIN_TYPE)
 
     def _check(self):
 
@@ -145,9 +145,9 @@ class Config():
                 sys.exit(27)
 
             # Valid puyoma
-            if not identifier.puyoma_check(self.is_puyoma(section)):
-                logger.warning('Invalid puyoma type choice in section {}'.format(section))
-                sys.exit(28)
+            # if not identifier.puyoma_check(self.is_puyoma(section)):
+            #     logger.warning('Invalid puyoma type choice in section {}'.format(section))
+            #     sys.exit(28)
 
 
     def _read_section(self, name):
