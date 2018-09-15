@@ -45,7 +45,32 @@ CONFIG_FILE = 'train_tickets.ini'
 logger = logcl.PersonalLog('tickets')
 config = confcl.Config(CONFIG_FILE)
 
+
+
 def main():
+    message = \
+    """
+    USAGE:
+        tickets.py version
+        tickets.py YYYY-MM-DD HH:MM:SS
+    """
+    if len(sys.argv) < 2:
+        print(message)
+        sys.exit(1)
+    elif sys.argv[1] == 'version':
+        _version()
+    else:
+        _run()
+
+
+def _version():
+    """
+    Show current using version of the program
+    """
+    print('Current version: {}'.format(VERSION))
+
+
+def _run():
     message = \
     """
     USAGE:
