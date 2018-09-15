@@ -142,15 +142,23 @@ def quantity_check(quantity):
     return quantity >= 1 and quantity <= 6
 
 
-# def puyoma_check(puyoma):
-#     """
-#     Yes / No validation
-#
-#     Return value:
-#         True - Valid option
-#         False - Invalid option
-#     """
-#     return puyoma.lower() == 'yes' or puyoma.lower() == 'no'
+def loop_interval_check(interval):
+    """
+    Loop interval validation
+
+    Return value:
+        True - Valid time interval
+        False - Invalid time interval
+    """
+    # Valid type
+    try:
+        interval = float(interval)
+    except ValueError:
+        return False
+
+    # Valid range
+    return interval >= 0.1 and interval <= 1
+
 
 
 

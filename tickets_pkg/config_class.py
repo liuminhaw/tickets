@@ -3,8 +3,6 @@ Program:
     Class for reading .ini file
 Author:
     haw
-Version:
-    0.0.0
 """
 
 import sys
@@ -35,7 +33,7 @@ class Config():
             25 - Date config error
             26 - Train number config error
             27 - Ticket quantity config error
-            28 - Puyoma type config error
+            28 - Loop interval config error
         """
 
         self.WEB_DRIVER = 'web driver'
@@ -46,7 +44,7 @@ class Config():
         self.TO_STATION = 'to station'
         self.TRAIN_NO = 'train number'
         self.QUANTITY = 'quantity'
-        self.TRAIN_TYPE = 'puyoma'
+        self.LOOP_INTERVAL = 'loop interval'
 
         # Get config information
         self._config = configparser.ConfigParser()
@@ -101,9 +99,9 @@ class Config():
         config_section = self._read_section(section)
         return self._read_key(config_section, self.QUANTITY)
 
-    # def is_puyoma(self, section):
-    #     config_section = self._read_section(section)
-    #     return self._read_key(config_section, self.TRAIN_TYPE)
+    def loop_interval(self, section):
+        config_section = self._read_section(section)
+        return self._read_key(config_section, self.LOOP_INTERVAL, fallback='0.3')
 
     def _check(self):
 
@@ -144,10 +142,11 @@ class Config():
                 logger.warning('Invalid quantity in section {}'.format(section))
                 sys.exit(27)
 
-            # Valid puyoma
-            # if not identifier.puyoma_check(self.is_puyoma(section)):
-            #     logger.warning('Invalid puyoma type choice in section {}'.format(section))
-            #     sys.exit(28)
+            # Valid loop interval
+            if not identifier.loop_interval_check(self.loop_interval(section)):
+                logger.warning('No loop interval found in {} and DEFAULT section.'.format(section))
+                sys.exit(28)
+
 
 
     def _read_section(self, name):
@@ -166,7 +165,7 @@ class Config():
         else:
             return section
 
-    def _read_key(self, section, key):
+    def _read_key(self, section, key, fallback=None):
         """
         Input:
             section - Config file section
@@ -174,7 +173,7 @@ class Config():
         Return:
             Value of the key
         """
-        value = section.get(key)
+        value = section.get(key, fallback)
         if value is None:
             logger.warning('No {} key exist in ini files.'.format(key))
             sys.exit(11)

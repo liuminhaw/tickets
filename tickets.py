@@ -5,6 +5,9 @@
 # Author:
 #   haw
 #
+# Version:
+#   1.1.0
+#
 # Exit Code:
 #   1 - Usage error
 #   3 - Site connection error
@@ -34,6 +37,8 @@ from tickets_pkg import logging_class as logcl
 from tickets_pkg import config_class as confcl
 
 
+VERSION = 'Version 1.1.0'
+
 SITE = 'http://railway.hinet.net/Foreign/TW/etno1.html'
 CONFIG_FILE = 'train_tickets.ini'
 
@@ -58,9 +63,6 @@ def main():
     # Get target sections
     threads = []
     sections = _target_sections()
-    # if sections == []:
-    #     logger.info('No section set to be read, please check the config file.')
-    #     sys.exit(11)
 
     # Configuration information
     interval = int(config.time_interval())
@@ -149,8 +151,9 @@ def _auto_run(target_time, section):
     # Form filling
     _fill_form(driver, section)
 
+    loop_interval = float(config.loop_interval(section))
     while datetime.datetime.now() < target_time:
-        time.sleep(0.3)
+        time.sleep(loop_interval)
 
     _elem_click(driver, '#sbutton')
 
