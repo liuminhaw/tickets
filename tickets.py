@@ -35,6 +35,7 @@ from selenium.webdriver.support.ui import Select
 
 from tickets_pkg import logging_class as logcl
 from tickets_pkg import config_class as confcl
+from tickets_pkg import validation_code_bot as vcbot
 
 
 VERSION = 'Version 1.1.0'
@@ -44,7 +45,6 @@ CONFIG_FILE = 'train_tickets.ini'
 
 logger = logcl.PersonalLog('tickets')
 config = confcl.Config(CONFIG_FILE)
-
 
 
 def main():
@@ -95,17 +95,25 @@ def _run():
     # Program auto countdown
     _countdown_prep(target_time, sections)
 
+    # Start multiple browser threads
     for section in sections[:-1]:
-        threads.append(threading.Thread(target=_auto_run, args=[target_time, section]))
-        threads[-1].start()
+        _activate_threads(threads, target_time, section)
         time.sleep(interval)
     else:
-        try:
-            threads.append(threading.Thread(target=_auto_run, args=[target_time, sections[-1]]))
-            threads[-1].start()
-        except IndexError:
-            logger.info('No section set to be read')
-            sys.exit(11)
+        _activate_threads(threads, target_time, sections[-1])
+    # for section in sections[:-1]:
+    #     for _ in range(int(config.duplicate(section))):
+    #         threads.append(threading.Thread(target=_auto_run, args=[target_time, section]))
+    #         threads[-1].start()
+    #     time.sleep(interval)
+    # else:
+    #     try:
+    #         for _ in range(int(config.duplicate(sections[-1])):
+    #             threads.append(threading.Thread(target=_auto_run, args=[target_time, sections[-1]]))
+    #             threads[-1].start()
+    #      except IndexError:
+    #         logger.info('No section set to be read')
+    #         sys.exit(11)
 
     # Press Enter to quit
     input('Enter to quit.\n')
@@ -144,6 +152,19 @@ def _countdown_prep(target_time, sections):
         time.sleep(1)
 
 
+def _activate_threads(threads, target_time, section):
+    """
+    Staring threads and thread duplications in section
+    """
+    delta_time = datetime.timedelta(microseconds=int(config.error_time()))
+
+    for _ in range(int(config.duplicate(section))):
+        threads.append(threading.Thread(target=_auto_run, args=[target_time, section]))
+        threads[-1].start()
+        target_time += delta_time
+        time.sleep(2)
+
+
 # Automation function
 def _auto_run(target_time, section):
     # config = confcl.Config('train_tickets.ini')
@@ -169,7 +190,7 @@ def _auto_run(target_time, section):
     # Test for success connection
     try:
         assert 'Train' in driver.title
-    except AssertionoError:
+    except AssertionError:
         print('Cannot connect to url')
         sys.exit(3)
 
@@ -219,6 +240,9 @@ def _fill_form(driver, section):
 
     _elem_click(driver, 'button[type="submit"]')
     _elem_click(driver, '#randInput')
+
+    # Auto fill Validation code
+    vcbot.fill_validation_code(driver)
 
 
 def _data_to_form(section):

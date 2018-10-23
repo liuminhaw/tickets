@@ -48,6 +48,24 @@ def time_interval_check(interval):
     return interval >= 1 and interval <= 60
 
 
+def error_time_check(err_value):
+    """
+    Error time validation
+
+    Return value:
+        True - Valid error time
+        False - Invalid error time
+    """
+    # Valid type
+    try:
+        err_value = int(err_value)
+    except ValueError:
+        return False
+
+    # Valid range
+    return err_value >= 0 and err_value <= 999999
+
+
 def section_exist_check(sections):
     """
     Section existence validation
@@ -159,6 +177,23 @@ def loop_interval_check(interval):
     # Valid range
     return interval >= 0.1 and interval <= 1
 
+
+def duplicate_check(number):
+    """
+    Section duplication number validation
+
+    Return value:
+        True - Valid duplication number
+        False - Invalid duplication number
+    """
+    # Valid type
+    try:
+        number = int(number)
+    except ValueError:
+        return False
+
+    # Valid range
+    return number >= 1 and number <= 4
 
 
 

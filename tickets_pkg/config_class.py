@@ -34,10 +34,14 @@ class Config():
             26 - Train number config error
             27 - Ticket quantity config error
             28 - Loop interval config error
+            29 - Error time config error
+            30 - Duplicate config error
         """
 
         self.WEB_DRIVER = 'web driver'
         self.TIME_INTERVAL = 'time interval'
+        self.ERROR_TIME = 'error time'
+
         self.ID = 'person id'
         self.DATE = 'date'
         self.FROM_STATION = 'from station'
@@ -45,6 +49,7 @@ class Config():
         self.TRAIN_NO = 'train number'
         self.QUANTITY = 'quantity'
         self.LOOP_INTERVAL = 'loop interval'
+        self.DUPLICATE = 'duplicate'
 
         # Get config information
         self._config = configparser.ConfigParser()
@@ -65,6 +70,10 @@ class Config():
     def time_interval(self):
         config_section = self._read_section('DRIVER')
         return self._read_key(config_section, self.TIME_INTERVAL)
+
+    def error_time(self):
+        config_section = self._read_section('DRIVER')
+        return self._read_key(config_section, self.ERROR_TIME)
 
     def target_sections(self):
         config_section = self._read_section('CONFIG')
@@ -103,6 +112,10 @@ class Config():
         config_section = self._read_section(section)
         return self._read_key(config_section, self.LOOP_INTERVAL, fallback='0.3')
 
+    def duplicate(self, section):
+        config_section = self._read_section(section)
+        return self._read_key(config_section, self.DUPLICATE, fallback='1')
+
     def _check(self):
 
         # Valid web driver
@@ -114,6 +127,11 @@ class Config():
         if not identifier.time_interval_check(self.time_interval()):
             logger.warning('Config time interval format error.')
             sys.exit(21)
+
+        # Valid error time
+        if not identifier.error_time_check(self.error_time()):
+            logger.warning('Config error time format error.')
+            sys.exit(29)
 
         # Valid list of sections in CONFIG
         if not identifier.section_exist_check(self.target_sections()):
@@ -144,8 +162,13 @@ class Config():
 
             # Valid loop interval
             if not identifier.loop_interval_check(self.loop_interval(section)):
-                logger.warning('No loop interval found in {} and DEFAULT section.'.format(section))
+                logger.warning('No loop interval found in section {}.'.format(section))
                 sys.exit(28)
+
+            # Valid duplicate value
+            if not identifier.duplicate_check(self.duplicate(section)):
+                logger.warning('No duplicate value found in section {}.'.format(section))
+                sys.exit(30)
 
 
 
