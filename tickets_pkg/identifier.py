@@ -6,7 +6,9 @@ Author:
 """
 
 import sys, re
-from tickets_pkg import logging_class as lgcl
+
+from . import logging_class as lgcl
+# from tickets_pkg import logging_class as lgcl
 # import logging_class as lgcl
 
 LETTERS = {'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14,

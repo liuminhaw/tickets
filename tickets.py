@@ -42,8 +42,9 @@ VERSION = 'Version 1.1.0'
 
 SITE = 'http://railway.hinet.net/Foreign/TW/etno1.html'
 CONFIG_FILE = 'train_tickets.ini'
+LOG_DIR = os.path.join(os.getcwd(), 'log')
 
-logger = logcl.PersonalLog('tickets')
+logger = logcl.PersonalLog('tickets', directory=LOG_DIR)
 config = confcl.Config(CONFIG_FILE)
 
 
@@ -219,12 +220,12 @@ def _fill_form(driver, section):
 
 
     # Filling form
+    _text_input(driver, 'train_no', config.train_number(section))
     _text_input(driver, 'person_id', config.id(section))
     _select_input(driver, 'getin_date', date_value)
     _select_input(driver, 'from_station', from_station_value)
     _select_input(driver, 'to_station', to_station_value)
-    _text_input(driver, 'train_no', config.train_number(section))
-    _elem_click(driver, 'label[for="order_qty_str"]')
+    # _elem_click(driver, 'label[for="order_qty_str"]')
 
     # Check train type
     try:

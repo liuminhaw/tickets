@@ -7,9 +7,11 @@ Author:
 
 import sys
 import configparser
-from tickets_pkg import logging_class as logcl
-from tickets_pkg import identifier
-# import logging_class as logcl
+
+from . import logging_class as logcl
+from . import identifier
+# from tickets_pkg import logging_class as logcl
+# from tickets_pkg import identifier
 
 logger = logcl.PersonalLog('config_class')
 
