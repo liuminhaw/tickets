@@ -32,6 +32,24 @@ def webdriver_check(web_driver):
     return web_driver.lower() == 'chrome' or web_driver.lower() == 'firefox'
 
 
+def period_check(period_time):
+    """
+    Check for ticket period time validation
+
+    Return value:
+        True - Valid check period
+        False - Invalid check period
+    """
+    # Valid type
+    try:
+        period_time = int(period_time)
+    except ValueError:
+        return False
+
+    # Valid range
+    return period_time == 0 or (period_time >= 5 and period_time <= 60)
+
+
 def time_interval_check(interval):
     """
     Time interval validation

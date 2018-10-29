@@ -38,9 +38,11 @@ class Config():
             28 - Loop interval config error
             29 - Error time config error
             30 - Duplicate config error
+            31 - Check period config error
         """
 
         self.WEB_DRIVER = 'web driver'
+        self.CHECK_PERIOD = 'check period'
         self.TIME_INTERVAL = 'time interval'
         self.ERROR_TIME = 'error time'
 
@@ -68,6 +70,10 @@ class Config():
     def web_driver(self):
         config_section = self._read_section('DRIVER')
         return self._read_key(config_section, self.WEB_DRIVER)
+
+    def check_period(self):
+        config_section = self._read_section('DRIVER')
+        return self._read_key(config_section, self.CHECK_PERIOD)
 
     def time_interval(self):
         config_section = self._read_section('DRIVER')
@@ -124,6 +130,11 @@ class Config():
         if not identifier.webdriver_check(self.web_driver()):
             logger.warning('Config web driver not supported type.')
             sys.exit(22)
+
+        # Valid check period
+        if not identifier.period_check(self.check_period()):
+            logger.warning('Config period check format error.')
+            sys.exit(31)
 
         # Valid time interval
         if not identifier.time_interval_check(self.time_interval()):

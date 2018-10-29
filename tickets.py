@@ -38,7 +38,7 @@ from tickets_pkg import config_class as confcl
 from tickets_pkg import validation_code_bot as vcbot
 
 
-VERSION = 'Version 1.1.0'
+VERSION = 'Version 2.0.0'
 
 SITE = 'http://railway.hinet.net/Foreign/TW/etno1.html'
 CONFIG_FILE = 'train_tickets.ini'
@@ -46,6 +46,8 @@ LOG_DIR = os.path.join(os.getcwd(), 'log')
 
 logger = logcl.PersonalLog('tickets', directory=LOG_DIR)
 config = confcl.Config(CONFIG_FILE)
+
+success = False
 
 
 def main():
@@ -86,35 +88,36 @@ def _run():
         print(message)
         sys.exit(1)
 
+    global success
+
     # Get target sections
     threads = []
     sections = _target_sections()
 
     # Configuration information
     interval = int(config.time_interval())
+    period_time = datetime.timedelta(minutes=int(config.check_period()))
 
-    # Program auto countdown
-    _countdown_prep(target_time, sections)
+    while True:
+        # Program auto countdown
+        _countdown_prep(target_time, sections)
 
-    # Start multiple browser threads
-    for section in sections[:-1]:
-        _activate_threads(threads, target_time, section)
-        time.sleep(interval)
-    else:
-        _activate_threads(threads, target_time, sections[-1])
-    # for section in sections[:-1]:
-    #     for _ in range(int(config.duplicate(section))):
-    #         threads.append(threading.Thread(target=_auto_run, args=[target_time, section]))
-    #         threads[-1].start()
-    #     time.sleep(interval)
-    # else:
-    #     try:
-    #         for _ in range(int(config.duplicate(sections[-1])):
-    #             threads.append(threading.Thread(target=_auto_run, args=[target_time, sections[-1]]))
-    #             threads[-1].start()
-    #      except IndexError:
-    #         logger.info('No section set to be read')
-    #         sys.exit(11)
+        # Check previous loop result
+        if success:
+            break
+
+        # Check period_time value
+        if period_time.seconds == 0:
+            success = True
+
+        # Start multiple browser threads
+        for section in sections[:-1]:
+            _activate_threads(threads, target_time, section)
+            time.sleep(interval)
+        else:
+            _activate_threads(threads, target_time, sections[-1])
+
+        target_time += period_time
 
     # Press Enter to quit
     input('Enter to quit.\n')
@@ -169,6 +172,7 @@ def _activate_threads(threads, target_time, section):
 # Automation function
 def _auto_run(target_time, section):
     # config = confcl.Config('train_tickets.ini')
+    global success
 
     # Web-driver type
     if config.web_driver().lower() == 'chrome':
@@ -207,10 +211,19 @@ def _auto_run(target_time, section):
     _geckolog_clean('geckodriver.log')
 
     # Thread cleaning
-    thread = threading.current_thread()
-    while getattr(thread, "current_state", True):
-        time.sleep(0.3)
-    driver.close()
+    if '訂票成功' in driver.page_source:
+        success = True
+        info_text = driver.find_element_by_css_selector('div.alert-success').text
+        logger.info('{}'.format(info_text.replace('\n', ' ')))
+        thread = threading.current_thread()
+        while getattr(thread, "current_state", True):
+            time.sleep(0.3)
+        driver.close()
+    else:
+        info_text = driver.find_element_by_css_selector('div.alert-danger').text
+        logger.info('{}'.format(info_text.replace('\n', ' ')))
+        time.sleep(30)
+        driver.close()
 
 
 def _fill_form(driver, section):
@@ -228,16 +241,23 @@ def _fill_form(driver, section):
     # _elem_click(driver, 'label[for="order_qty_str"]')
 
     # Check train type
-    try:
-        _select_input(driver, 'order_qty_str', config.quantity(section))
-    except:
-        pass
-
-    try:
+    if 'n_order_qty_str' in driver.page_source:
         _select_input(driver, 'n_order_qty_str', config.quantity(section))
-    except:
+    elif 'order_qty_str' in driver.page_source:
+        _select_input(driver, 'order_qty_str', config.quantity(section))
+    else:
         logger.warning('Page content may have changed, program need to be fixed.')
         sys.exit(15)
+    # try:
+    #     _select_input(driver, 'order_qty_str', config.quantity(section))
+    # except:
+    #     pass
+    #
+    # try:
+    #     _select_input(driver, 'n_order_qty_str', config.quantity(section))
+    # except:
+    #     logger.warning('Page content may have changed, program need to be fixed.')
+    #     sys.exit(15)
 
     _elem_click(driver, 'button[type="submit"]')
     _elem_click(driver, '#randInput')
