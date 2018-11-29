@@ -32,6 +32,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.chrome.options import Options
 
 from tickets_pkg import logging_class as logcl
 from tickets_pkg import config_class as confcl
@@ -174,10 +175,14 @@ def _auto_run(target_time, section):
     # config = confcl.Config('train_tickets.ini')
     global success
 
-    # Web-driver type
     if config.web_driver().lower() == 'chrome':
-        driver = webdriver.Chrome()
+        options = Options()
+        options.headless = True
+        driver = webdriver.Chrome(chrome_options=options)
     elif config.web_driver().lower() == 'firefox':
+        # options = webdriver.FirefoxOptions()
+        # options.add_argument('-headless')
+        # driver = webdriver.Firefox(executable_path='/usr/local/bin/geckodriver', firefox_options=options)
         driver = webdriver.Firefox()
 
     # Connect to url
