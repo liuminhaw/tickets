@@ -48,7 +48,7 @@ LOG_DIR = os.path.join(os.getcwd(), 'log')
 logger = logcl.PersonalLog('tickets', directory=LOG_DIR)
 config = confcl.Config(CONFIG_FILE)
 
-success = False
+# success = False
 
 
 def main():
@@ -89,7 +89,7 @@ def _run():
         print(message)
         sys.exit(1)
 
-    global success
+    # global success
 
     # Get target sections
     threads = []
@@ -104,19 +104,31 @@ def _run():
         _countdown_prep(target_time, sections)
 
         # Check previous loop result
-        if success:
-            break
+        # if success:
+            # break
 
         # Check period_time value
-        if period_time.seconds == 0:
-            success = True
+        # if period_time.seconds == 0:
+            # success = True
 
         # Start multiple browser threads
         for section in sections[:-1]:
-            _activate_threads(threads, target_time, section)
-            time.sleep(interval)
+            if config.success(section) == 'false':
+                _activate_threads(threads, target_time, section)
+                time.sleep(interval)
         else:
-            _activate_threads(threads, target_time, sections[-1])
+            if config.success(sections[-1]) == 'false':
+                _activate_threads(threads, target_time, sections[-1])
+
+        # Break out of loop if no section need to be ran
+        # Break out of loop if period time is set to zero
+        time.sleep(interval + 10)
+        count = 0
+        for section in sections:
+            if config.success(section) == 'false':
+                count += 1 
+        if count == 0 or period_time.seconds == 0:
+            break
 
         target_time += period_time
 
@@ -154,7 +166,11 @@ def _countdown_prep(target_time, sections):
     prepare_time = target_time - delta_time
 
     while datetime.datetime.now() < prepare_time:
-        time.sleep(1)
+        try:
+            time.sleep(1)
+        except EOFError:
+            print('Program manual exit')
+            sys.exit()
 
 
 def _activate_threads(threads, target_time, section):
@@ -173,7 +189,7 @@ def _activate_threads(threads, target_time, section):
 # Automation function
 def _auto_run(target_time, section):
     # config = confcl.Config('train_tickets.ini')
-    global success
+    # global success
 
     if config.web_driver().lower() == 'chrome':
         options = Options()
@@ -217,7 +233,7 @@ def _auto_run(target_time, section):
 
     # Thread cleaning
     if '訂票成功' in driver.page_source:
-        success = True
+        config.success(section, 'true')
         info_text = driver.find_element_by_css_selector('div.alert-success').text
         logger.info('{}'.format(info_text.replace('\n', ' ')))
         thread = threading.current_thread()

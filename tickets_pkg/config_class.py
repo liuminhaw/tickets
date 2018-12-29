@@ -55,6 +55,8 @@ class Config():
         self.LOOP_INTERVAL = 'loop interval'
         self.DUPLICATE = 'duplicate'
 
+        self.SUCCESS = 'success'
+
         # Get config information
         self._config = configparser.ConfigParser()
         self._config_found = self._config.read(candidates)
@@ -66,6 +68,9 @@ class Config():
 
         # Check config file format
         self._check()
+
+        # Initial each section status 
+        self._init_sections_status()
 
     def web_driver(self):
         config_section = self._read_section('DRIVER')
@@ -123,6 +128,16 @@ class Config():
     def duplicate(self, section):
         config_section = self._read_section(section)
         return self._read_key(config_section, self.DUPLICATE, fallback='1')
+
+    def success(self, section ,set_value=None):
+        """
+        set_value should only be set to 'true' or 'false'
+        """
+        config_section = self._read_section(section)
+
+        if set_value:
+            self._config.set(section, self.SUCCESS, set_value)            
+        return self._read_key(config_section, self.SUCCESS)
 
     def _check(self):
 
@@ -216,6 +231,14 @@ class Config():
         else:
             return value
 
+    def _init_sections_status(self):
+        """
+        Set each section's option of success to false
+        """
+        for section in self.target_sections():
+            self._config.set(section, self.SUCCESS, 'false')
+            print('Set section {} state to false'.format(section))
+
 
 if __name__ == '__main__':
     config = Config('train_tickets.ini')
@@ -229,4 +252,3 @@ if __name__ == '__main__':
     print(config.to_station('INFO01'))
     print(config.train_number('INFO01'))
     print(config.quantity('INFO01'))
-    print(config.is_puyoma('INFO01'))

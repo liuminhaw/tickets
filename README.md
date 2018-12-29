@@ -9,10 +9,9 @@ Buy Taiwan railway tickets
 Use `train_tickets.ini` to setup tickets information  
 Configuration file format can be referenced in `train_template.ini`
 
-### Version 1.1.0
-##### v1.1.0 Update
-- Add version function
-- New loop interval configuration setting
+### Version 2.0.0
+- Validation form auto fill
+- Program period time repeat
 
 ##### Steps
 - Setup `train_tickets.ini` configuration file.
