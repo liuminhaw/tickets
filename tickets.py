@@ -39,7 +39,7 @@ from tickets_pkg import config_class as confcl
 from tickets_pkg import validation_code_bot as vcbot
 
 
-VERSION = 'Version 2.0.0'
+VERSION = 'Version 2.0.1'
 
 SITE = 'http://railway.hinet.net/Foreign/TW/etno1.html'
 CONFIG_FILE = 'train_tickets.ini'
@@ -192,6 +192,7 @@ def _auto_run(target_time, section):
     # global success
 
     if config.web_driver().lower() == 'chrome':
+        # driver = webdriver.Chrome()
         options = Options()
         options.headless = True
         driver = webdriver.Chrome(chrome_options=options)
@@ -255,20 +256,33 @@ def _fill_form(driver, section):
 
     # Filling form
     _text_input(driver, 'train_no', config.train_number(section))
+    print('Train Num Success')
     _text_input(driver, 'person_id', config.id(section))
+    print('Person ID Success')
     _select_input(driver, 'getin_date', date_value)
+    print('Get In Date Success')
     _select_input(driver, 'from_station', from_station_value)
+    print('From Station Success')
     _select_input(driver, 'to_station', to_station_value)
+    print('To Station Success')
     # _elem_click(driver, 'label[for="order_qty_str"]')
 
     # Check train type
-    if 'n_order_qty_str' in driver.page_source:
+    try:
         _select_input(driver, 'n_order_qty_str', config.quantity(section))
-    elif 'order_qty_str' in driver.page_source:
+    except:
         _select_input(driver, 'order_qty_str', config.quantity(section))
-    else:
-        logger.warning('Page content may have changed, program need to be fixed.')
-        sys.exit(15)
+
+    # if 'n_order_qty_str' in driver.page_source:
+        # _select_input(driver, 'n_order_qty_str', config.quantity(section))
+        # print('N Order Qty Success')
+    # elif 'order_qty_str' in driver.page_source:
+        # _select_input(driver, 'order_qty_str', config.quantity(section))
+        # print('Order QTY Success')
+    # else:
+        # logger.warning('Page content may have changed, program need to be fixed.')
+        # sys.exit(15)
+
     # try:
     #     _select_input(driver, 'order_qty_str', config.quantity(section))
     # except:

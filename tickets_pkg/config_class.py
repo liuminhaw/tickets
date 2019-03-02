@@ -237,7 +237,7 @@ class Config():
         """
         for section in self.target_sections():
             self._config.set(section, self.SUCCESS, 'false')
-            print('Set section {} state to false'.format(section))
+            # print('Set section {} state to false'.format(section))
 
 
 if __name__ == '__main__':
