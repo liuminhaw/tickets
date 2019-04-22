@@ -9,7 +9,10 @@ Buy Taiwan railway tickets
 Use `train_tickets.ini` to setup tickets information  
 Configuration file format can be referenced in `train_template.ini`
 
-### Version 2.0.1
+### Version 2.0.1x 
+- Deprecated due to Railway's new system
+
+### Version 2.0.1 (Deprecated due to new system, updating in progress)
 - Fix select inpur problem when checking train type
 
 #### Version 2.0.0
