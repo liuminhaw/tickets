@@ -31,42 +31,27 @@ function Installation() {
     cp README.md ${DESTDIR}
     checkCode 11 "Copy README.md failed." > /dev/null
 
-    cp tickets.py ${DESTDIR}
-    checkCode 11 "Copy tickets.py failed." > /dev/null
+    cp booking.py ${DESTDIR}
+    checkCode 11 "Copy booking.py failed." > /dev/null
 
-    cp train_template.ini ${DESTDIR}/train_tickets.ini
-    checkCode 11 "Copy train_template.ini failed." > /dev/null
+    #cp requirements.txt ${DESTDIR}
+    #checkCode 11 "Copy requirements.txt failed." > /dev/null
 
-    cp requirements.txt ${DESTDIR}
-    checkCode 11 "Copy requirements.txt failed." > /dev/null
+    cp -r general_pkg ${DESTDIR}
+    checkCode 11 "Copy general_pkg directory failed." > /dev/null
 
-    cp -r tickets_pkg ${DESTDIR}
-    checkCode 11 "Copy tickets_pkg directory failed." > /dev/null
+    cp -r module_pkg ${DESTDIR}
+    checkCode 11 "Copy module_pkg directory failed." > /dev/null
+
+    if [[ ! -f "${DESTDIR}/config.ini" ]]; then
+      cp config_template.ini ${DESTDIR}/config.ini
+      checkCode 11 "Copy config_template.ini failed." > /dev/null
+    fi
 
     if [[ ! -d "${DESTDIR}/log" ]]; then
       mkdir "${DESTDIR}/log"
       checkCode 15 "Make log directory failed." > /dev/null
     fi
-
-    if [[ ! -d "${DESTDIR}/model" ]]; then
-      mkdir "${DESTDIR}/model"
-      checkCode 15 "Make model directory failed." > /dev/null
-    fi
-
-    wget --directory-prefix=${DESTDIR}/model https://storage.googleapis.com/taiwan-railway-220407/model/imitate_5_model.h5 \
-    checkCode 17 "Download imitate_5_model failed." > /dev/null
-
-    wget --directory-prefix=${DESTDIR}/model https://storage.googleapis.com/taiwan-railway-220407/model/imitate_6_model.h5 \
-    checkCode 17 "wget download imitate_6_model failed." > /dev/null
-
-    wget --directory-prefix=${DESTDIR}/model https://storage.googleapis.com/taiwan-railway-220407/model/imitate_56_model.h5 \
-    checkCode 17 "wget download imitate_56_model failed." > /dev/null
-
-    wget --directory-prefix=${DESTDIR}/model https://storage.googleapis.com/taiwan-railway-220407/model/capture.jpg
-    checkCode 17 "wget download capture.jpg failed." > /dev/null
-
-    wget --directory-prefix=${DESTDIR}/model https://storage.googleapis.com/taiwan-railway-220407/model/screen.png
-    checkCode 17 "wget download screen.png failed." > /dev/null
 }
 
 
@@ -92,16 +77,10 @@ case ${SYSTEM_RELEASE} in
     echo ""
     Installation ${1}
     ;;
-  *Darwin*)
-    echo "Darwin detected"
-    echo ""
-    Installation ${1}
-    ;;
   *)
     echo "OS Not supported."
     exit 1
 esac
 
-
-echo "tickets setup success."
+echo "booking setup success."
 exit 0
