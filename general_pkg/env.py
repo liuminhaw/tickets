@@ -7,7 +7,7 @@ import os
 VERSION = 'v3.0.0'
 
 CONFIG_FILE = ['config.ini']
-LOG_DIR = os.path.join(os.getcwd(), 'logs')
+LOG_DIR = os.path.join(os.getcwd(), 'log')
 
 # Web DOM variables definition
 ID_LOGIN = 'ContentPlaceHolder1_loginid'

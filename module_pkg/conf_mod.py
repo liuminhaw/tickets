@@ -67,34 +67,51 @@ class Config():
         """
         Return config DATE option in section_name section
         """
-        return self._read_value(section_name, self.DATE)
+        _date = self._read_value(section_name, self.DATE)
+        self._validate('\d{4}/\d{2}/\d{2}', self.DATE, _date)
+
+        return _date
 
     def section(self, section_name):
         """
         Return config SECTION option in section_name section
         """
-        return self._read_value(section_name, self.SECTION)
+        _section = self._read_value(section_name, self.SECTION) 
+        self._validate('morning|evening|night', self.SECTION, _section)
+
+        return _section
 
     def time(self, section_name):
         """
         Return config TIME option in section_name section
         """
-        return self._read_value(section_name, self.TIME)
+        _time = self._read_value(section_name, self.TIME)
+        self._validate('[0-2]\d:00~[0-2]\d:00', self.TIME, _time)
+
+        return _time
 
     def court(self, section_name):
         """
         Return config COURT option in section_name section
         """
-        return self._read_value(section_name, self.COURT)
+        _court = self._read_value(section_name, self.COURT)
+        self._validate('羽[0-9]|羽10', self.COURT, _court)
+
+        return _court
 
 
-    def validate(self):
+    def _validate(self, pattern, key, value):
         """
         Test to make sure there is value for all options
+        Input:
+            pattern: regular expression object
+            key: string - config option key
+            value: string - config option value
         """
-        _re_pattern = re.compile(r'REGEX-PATTERN')
+        _re_pattern = re.compile(r'{}'.format(pattern))
 
-        self._regex_test(_re_pattern, value, NAMED_KEY)
+        if _re_pattern.fullmatch(value) == None:
+            raise OptionFormatError(key, value)
 
     
     def _read_value(self, section, key):
@@ -117,19 +134,6 @@ class Config():
             raise NoOptionError(key)
         else:
             return _config_value
-
-
-    def _regex_test(self, pattern , value, key):
-        """
-        Test regex matching
-        Input:
-            pattern: regular expression object
-            value: string - config option value
-            key: string - config option key
-        """
-        if pattern.fullmatch(value) == None:
-            raise OptionFormatError(key, value)
-
 
 
 # Exceptions

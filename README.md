@@ -4,4 +4,7 @@
 
 ## Error Code
 `11` - `conf_mod` ConfigNotFoundError
+`12` - `conf_mod` NoSectionError
+`13` - `conf_mod` NoOptionError
+`14` - `conf_mod` OptionFormatError
 

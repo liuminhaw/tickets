@@ -68,12 +68,21 @@ def main():
         booking_court = config.court(data_section)
     except conf_mod.NoSectionError as err:
         logging = 'config file section error: {}'.format(err)
-        logger.info(logging)
+        logger.warning(logging)
         sys.exit(12)
     except conf_mod.NoOptionError as err:
         logging = 'config file option error: {}'.format(err)
-        logger.info(logging)
+        logger.warning(logging)
         sys.exit(13)
+    except conf_mod.OptionFormatError as err:
+        logging = 'config file option format error: {}'.format(err)
+        logger.warning(logging)
+        sys.exit(14)
+
+    logger.info(booking_date)
+    logger.info(booking_section)
+    logger.info(booking_time)
+    logger.info(booking_court)
 
     # Run selenium driver
     driver = webdriver.Chrome()
