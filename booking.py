@@ -15,9 +15,11 @@ from selenium import webdriver
 # Local application imports
 # import self defined applications here
 from general_pkg import env
+from general_pkg import booking_lib as lib
 
 from module_pkg import logging_class as logcl
 from module_pkg import conf_mod
+from module_pkg import driver
 
 logger = logcl.PersonalLog('booking', env.LOG_DIR)
 
@@ -60,6 +62,7 @@ def main():
     try:
         login_link = config.login_link()
         booking_link = config.booking_link()
+        vision_cred = config.vision_cred()
         login_user = config.login_user()
         login_password = config.login_password()
         booking_date = config.date(data_section)
@@ -85,30 +88,33 @@ def main():
     logger.info(booking_court)
 
     # Run selenium driver
-    driver = webdriver.Chrome()
-    driver.get(login_link)
+    browser = driver.Driver()
+    browser.get(login_link)
 
-    alert_obj = driver.switch_to.alert
-    alert_obj.accept()
-    alert_obj = driver.switch_to.alert
-    alert_obj.accept()
+    browser.accept_alert()
+    browser.accept_alert()
 
-    elem = driver.find_element_by_id(env.ID_LOGIN)
-    elem.send_keys(login_user)
-    elem = driver.find_element_by_id(env.ID_PASSWD)
-    elem.send_keys(login_password)
-    elem = driver.find_element_by_id(env.ID_CAPTCHA)
-    elem.click()
+    browser.insert_text(env.ID_LOGIN, login_user)
+    browser.insert_text(env.ID_PASSWD, login_password)
 
-    # Manual insert captcha value
-    input('Press Enter to continue.')
+    # Uncaptcha
+    try:
+        captcha_ans = lib.uncaptcha_sport(browser.driver, vision_cred)
+        browser.insert_text(env.ID_CAPTCHA, captcha_ans)
+    except lib.NoMatchTextError as err:
+        logger.info(err)
+        sys.exit(21)
 
-    elem = driver.find_element_by_id(env.ID_LOGIN_BTN)
-    elem.click()
+    browser.click(env.ID_LOGIN_BTN)
 
     # Press Enter to quit
     input('Press Enter to quit.\n')
 
+
+def _uncaptcha():
+    """
+    Solving daan-sport-center captcha
+    """
 
 if __name__ == '__main__':
     # Rund codes

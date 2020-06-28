@@ -7,4 +7,5 @@
 `12` - `conf_mod` NoSectionError
 `13` - `conf_mod` NoOptionError
 `14` - `conf_mod` OptionFormatError
+`21` - `booking_lib` NoMatchTextError
 

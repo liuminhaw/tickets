@@ -1,4 +1,4 @@
-# -*- conding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 
 # Standard library imports
 import configparser
@@ -21,6 +21,7 @@ class Config():
         # Keys
         self.LOGIN_LINK = 'login-link'
         self.BOOKING_LINK = 'booking-link'
+        self.VISION_CRED = 'vision-cred'
 
         self.USER = 'user'
         self.PASSWORD = 'password'
@@ -50,6 +51,12 @@ class Config():
         Return config login-link option in GENERAL section
         """
         return self._read_value(self.GENERAL, self.BOOKING_LINK)
+
+    def vision_cred(self):
+        """
+        Return config vision api credential setting in GENERAL section
+        """
+        return self._read_value(self.GENERAL, self.VISION_CRED)
 
     def login_user(self):
         """

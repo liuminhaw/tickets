@@ -13,4 +13,5 @@ LOG_DIR = os.path.join(os.getcwd(), 'log')
 ID_LOGIN = 'ContentPlaceHolder1_loginid'
 ID_PASSWD = 'loginpw'
 ID_CAPTCHA = 'ContentPlaceHolder1_Captcha_text'
+ID_CAPTCHA_IMAGE = 'ContentPlaceHolder1_CaptchaImage'
 ID_LOGIN_BTN = 'login_but'
