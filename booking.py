@@ -15,7 +15,7 @@ from selenium import webdriver
 # Local application imports
 # import self defined applications here
 from general_pkg import env
-from general_pkg import booking_lib as lib
+from general_pkg import uncaptcha
 
 from module_pkg import logging_class as logcl
 from module_pkg import conf_mod
@@ -88,6 +88,7 @@ def main():
     logger.info(booking_court)
 
     # Run selenium driver
+    # User login
     browser = driver.Driver()
     browser.get(login_link)
 
@@ -99,22 +100,34 @@ def main():
 
     # Uncaptcha
     try:
-        captcha_ans = lib.uncaptcha_sport(browser.driver, vision_cred)
+        captcha_ans = uncaptcha.uncaptcha_sport(browser.driver, vision_cred)
         browser.insert_text(env.ID_CAPTCHA, captcha_ans)
-    except lib.NoMatchTextError as err:
+    except uncaptcha.NoMatchTextError as err:
         logger.info(err)
         sys.exit(21)
 
     browser.click(env.ID_LOGIN_BTN)
 
+    # Directing to booking page
+    booking_link = '{link}&D={date}&D2={section}'.format(link=booking_link, date=booking_date, section=booking_section)
+    browser.get(booking_link)
+
+    # Find target booking button
+    try:
+        booking_button = browser.find_target(env.TARGETS_SELECTOR, booking_time, booking_court)
+    except driver.FindElementError as err:
+        logger.info(err)
+        sys.exit(31)
+
+    if booking_button.get_attribute('title') == '':
+        logger.info('Booking available')
+    else:
+        logger.info('Booking not available')
+    
+
     # Press Enter to quit
     input('Press Enter to quit.\n')
 
-
-def _uncaptcha():
-    """
-    Solving daan-sport-center captcha
-    """
 
 if __name__ == '__main__':
     # Rund codes

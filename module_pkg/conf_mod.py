@@ -86,7 +86,14 @@ class Config():
         _section = self._read_value(section_name, self.SECTION) 
         self._validate('morning|evening|night', self.SECTION, _section)
 
-        return _section
+        if _section == 'morning':
+            return '1'
+        elif _section == 'evening':
+            return '2'
+        elif _section == 'night':
+            return '3'
+        else:
+            raise OptionFormatError(self.SECTION, _section)
 
     def time(self, section_name):
         """
