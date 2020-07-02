@@ -5,8 +5,9 @@
 
 # Standard library imports
 # import standard libraries here
-import sys
+import sys, time
 import argparse
+from datetime import datetime, timedelta
 
 # Third party library imports
 # import third party libraries here
@@ -65,6 +66,7 @@ def main():
         vision_cred = config.vision_cred()
         login_user = config.login_user()
         login_password = config.login_password()
+        submit_time = config.submit_time(data_section)
         booking_date = config.date(data_section)
         booking_section = config.section(data_section)
         booking_time = config.time(data_section)
@@ -82,10 +84,17 @@ def main():
         logger.warning(logging)
         sys.exit(14)
 
-    logger.info(booking_date)
-    logger.info(booking_section)
-    logger.info(booking_time)
-    logger.info(booking_court)
+    logger.info('Submit time: {}'.format(submit_time))
+    logger.info('Booking date: {}'.format(booking_date))
+    logger.info('Booking section: {}'.format(booking_section))
+    logger.info('Booking time: {}'.format(booking_time))
+    logger.info('Booking court: {}'.format(booking_court))
+
+    # Run driver 5 minutes before submit time
+    logger.info('Waiting for execution time...')
+    execute_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S') - timedelta(minutes=5)
+    while datetime.now() < execute_time:
+        time.sleep(10)
 
     # Run selenium driver
     # User login
@@ -121,6 +130,12 @@ def main():
 
     if booking_button.get_attribute('title') == '':
         logger.info('Booking available')
+        submit_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S')
+        # Loop check submit once after submit time
+        while datetime.now() < submit_time:
+            time.sleep(0.3)
+        booking_button.click()
+        browser.accept_alert()
     else:
         logger.info('Booking not available')
     

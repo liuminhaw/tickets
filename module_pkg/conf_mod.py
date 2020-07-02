@@ -26,6 +26,7 @@ class Config():
         self.USER = 'user'
         self.PASSWORD = 'password'
 
+        self.SUBMIT_TIME = 'submit-time'
         self.DATE = 'date'
         self.SECTION = 'section'
         self.TIME = 'time'
@@ -69,6 +70,15 @@ class Config():
         Return config password option in ACCOUNT section
         """
         return self._read_value(self.ACCOUNT, self.PASSWORD)
+
+    def submit_time(self, section_name):
+        """
+        Return config SUBMIT_TIME option in section_name section
+        """
+        _submit_time = self._read_value(section_name, self.SUBMIT_TIME)
+        self._validate('\d{4}/\d{2}/\d{2}-\d{2}:\d{2}:\d{2}', self.SUBMIT_TIME, _submit_time)
+
+        return _submit_time
 
     def date(self, section_name):
         """

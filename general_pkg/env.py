@@ -2,6 +2,7 @@
 
 # Standard library imports
 import os
+import datetime
 
 # Global variable definitions
 VERSION = 'v3.0.0'
