@@ -90,9 +90,9 @@ def main():
     logger.info('Booking time: {}'.format(booking_time))
     logger.info('Booking court: {}'.format(booking_court))
 
-    # Run driver 5 minutes before submit time
+    # Run driver 3 minutes before submit time
     logger.info('Waiting for execution time...')
-    execute_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S') - timedelta(minutes=5)
+    execute_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S') - timedelta(minutes=3)
     while datetime.now() < execute_time:
         time.sleep(10)
 
