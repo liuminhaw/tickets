@@ -134,6 +134,8 @@ def main():
         # Loop check submit once after submit time
         while datetime.now() < submit_time:
             time.sleep(0.3)
+        # Offset time before submit
+        time.sleep(0.5)
         booking_button.click()
         browser.accept_alert()
     else:
