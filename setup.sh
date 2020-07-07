@@ -34,8 +34,8 @@ function Installation() {
     cp booking.py ${DESTDIR}
     checkCode 11 "Copy booking.py failed." > /dev/null
 
-    #cp requirements.txt ${DESTDIR}
-    #checkCode 11 "Copy requirements.txt failed." > /dev/null
+    cp requirements.txt ${DESTDIR}
+    checkCode 11 "Copy requirements.txt failed." > /dev/null
 
     cp -r general_pkg ${DESTDIR}
     checkCode 11 "Copy general_pkg directory failed." > /dev/null
