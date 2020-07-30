@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-Some functions used in booking program
+captcha resolve used in booking program
 Author: 
     haw
 """

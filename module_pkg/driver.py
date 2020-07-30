@@ -13,7 +13,13 @@ from selenium import webdriver
 class Driver():
     
     def __init__(self):
+        pass
+
+    def up(self):
         self.driver = webdriver.Chrome()
+
+    def down(self):
+        self.driver.close()
 
     def get(self, url):
         """
@@ -52,8 +58,28 @@ class Driver():
         
         for i in range(len(candidates)):
             if candidates[i].text == time and candidates[i+1].text == court:
-                return candidates[i+3].find_element_by_tag_name('img')
-        raise FindElementError(driverError)
+                self.booking_button = candidates[i+3].find_element_by_tag_name('img')
+                break
+                # return candidates[i+3].find_element_by_tag_name('img')
+        else: 
+            FindElementError(driverError)
+
+    def read_conf(self, config, section):
+        """
+        Read in config settings
+        Exception:
+            conf_mod.NoSectionError
+            conf_mod.NoOptionError
+            conf_mod.OptionFormatError
+        """
+        self.login_link = config.login_link()
+        self.booking_link = config.booking_link()
+        self.login_user = config.login_user()
+        self.login_password = config.login_password()
+        self.booking_date = config.date(section)
+        self.booking_section = config.section(section)
+        self.booking_time = config.time(section)
+        self.booking_court = config.court(section)
 
 
 # Exceptions

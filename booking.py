@@ -17,6 +17,7 @@ from selenium import webdriver
 # import self defined applications here
 from general_pkg import env
 from general_pkg import uncaptcha
+from general_pkg import prep
 
 from module_pkg import logging_class as logcl
 from module_pkg import conf_mod
@@ -60,17 +61,12 @@ def main():
         logger.info(logging)
         sys.exit(11)
 
+    browsers = [driver.Driver(), driver.Driver()]
     try:
-        login_link = config.login_link()
-        booking_link = config.booking_link()
-        vision_cred = config.vision_cred()
-        login_user = config.login_user()
-        login_password = config.login_password()
+        for browser in browsers:
+            browser.read_conf(config, data_section)
         submit_time = config.submit_time(data_section)
-        booking_date = config.date(data_section)
-        booking_section = config.section(data_section)
-        booking_time = config.time(data_section)
-        booking_court = config.court(data_section)
+        vision_cred = config.vision_cred()
     except conf_mod.NoSectionError as err:
         logging = 'config file section error: {}'.format(err)
         logger.warning(logging)
@@ -85,10 +81,10 @@ def main():
         sys.exit(14)
 
     logger.info('Submit time: {}'.format(submit_time))
-    logger.info('Booking date: {}'.format(booking_date))
-    logger.info('Booking section: {}'.format(booking_section))
-    logger.info('Booking time: {}'.format(booking_time))
-    logger.info('Booking court: {}'.format(booking_court))
+    logger.info('Booking date: {}'.format(browsers[0].booking_date))
+    logger.info('Booking section: {}'.format(browsers[0].booking_section))
+    logger.info('Booking time: {}'.format(browsers[0].booking_time))
+    logger.info('Booking court: {}'.format(browsers[0].booking_court))
 
     # Run driver 3 minutes before submit time
     logger.info('Waiting for execution time...')
@@ -96,51 +92,42 @@ def main():
     while datetime.now() < execute_time:
         time.sleep(10)
 
-    # Run selenium driver
-    # User login
-    browser = driver.Driver()
-    browser.get(login_link)
+    # Browser preparation
+    for browser in browsers:
+        prep.sport_prep(browser, vision_cred)
 
-    browser.accept_alert()
-    browser.accept_alert()
-
-    browser.insert_text(env.ID_LOGIN, login_user)
-    browser.insert_text(env.ID_PASSWD, login_password)
-
-    # Uncaptcha
-    try:
-        captcha_ans = uncaptcha.uncaptcha_sport(browser.driver, vision_cred)
-        browser.insert_text(env.ID_CAPTCHA, captcha_ans)
-    except uncaptcha.NoMatchTextError as err:
-        logger.info(err)
-        sys.exit(21)
-
-    browser.click(env.ID_LOGIN_BTN)
-
-    # Directing to booking page
-    booking_link = '{link}&D={date}&D2={section}'.format(link=booking_link, date=booking_date, section=booking_section)
-    browser.get(booking_link)
 
     # Find target booking button
-    try:
-        booking_button = browser.find_target(env.TARGETS_SELECTOR, booking_time, booking_court)
-    except driver.FindElementError as err:
-        logger.info(err)
-        sys.exit(31)
+    valid_browsers = []
+    for browser in browsers:
+        try:
+            browser.find_target(env.TARGETS_SELECTOR, browser.booking_time, browser.booking_court)
+            valid_browsers.append(browser)
+        except driver.FindElementError as err:
+            logger.info(err)
+            browser.down()
 
-    if booking_button.get_attribute('title') == '':
-        logger.info('Booking available')
-        submit_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S')
-        # Loop check submit once after submit time
-        while datetime.now() < submit_time:
-            time.sleep(0.3)
-        # Offset time before submit
-        time.sleep(0.5)
-        booking_button.click()
+    final_browsers = []
+    for browser in valid_browsers:
+        if browser.booking_button.get_attribute('title') == '':
+            logger.info('Booking available')
+            final_browsers.append(browser)
+        else:
+            logger.info('Booking not available')
+
+    submit_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S')
+    while datetime.now() < submit_time:
+        time.sleep(0.3)
+
+    print('Start', datetime.now())
+    time.sleep(0.4)
+    for browser in final_browsers:
+        browser.booking_button.click()
+        print('Clicked', datetime.now())
         browser.accept_alert()
-    else:
-        logger.info('Booking not available')
+        time.sleep(0.3)
     
+        
 
     # Press Enter to quit
     input('Press Enter to quit.\n')
