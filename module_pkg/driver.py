@@ -9,6 +9,7 @@ Author:
 
 # Third party library imports
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 class Driver():
     
@@ -16,6 +17,9 @@ class Driver():
         pass
 
     def up(self):
+        options = Options()
+        options.headless = True
+        #self.driver = webdriver.Chrome(chrome_options=options)
         self.driver = webdriver.Chrome()
 
     def down(self):
