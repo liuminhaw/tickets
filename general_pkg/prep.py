@@ -26,7 +26,7 @@ def sport_prep(browser, credential):
     Exception:
         uncaptcha.NoMatchTextError
     """
-    browser.up()
+    browser.up(browser.headless)
     browser.get(browser.login_link)
     browser.accept_alert()
     browser.accept_alert()

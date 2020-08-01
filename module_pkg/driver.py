@@ -16,11 +16,18 @@ class Driver():
     def __init__(self):
         pass
 
-    def up(self):
-        options = Options()
-        options.headless = True
-        #self.driver = webdriver.Chrome(chrome_options=options)
-        self.driver = webdriver.Chrome()
+    def up(self, headless):
+        """
+        Create selenium driver
+        Param:
+            headless - headless mode [boolean]
+        """
+        if headless:
+            options = Options()
+            options.headless = True
+            self.driver = webdriver.Chrome(chrome_options=options)
+        else:
+            self.driver = webdriver.Chrome()
 
     def down(self):
         self.driver.close()
@@ -80,6 +87,7 @@ class Driver():
         self.booking_link = config.booking_link()
         self.login_user = config.login_user()
         self.login_password = config.login_password()
+        self.headless = config.headless()
         self.booking_date = config.date(section)
         self.booking_section = config.section(section)
         self.booking_time = config.time(section)

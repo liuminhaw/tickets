@@ -21,6 +21,7 @@ class Config():
         # Keys
         self.LOGIN_LINK = 'login-link'
         self.BOOKING_LINK = 'booking-link'
+        self.HEADLESS = 'headless'
         self.VISION_CRED = 'vision-cred'
 
         self.USER = 'user'
@@ -31,6 +32,10 @@ class Config():
         self.SECTION = 'section'
         self.TIME = 'time'
         self.COURT = 'court'
+
+        # Default value
+        self.VISION_CRED_DFLT = 'credential.json'
+        self.HEADLESS_DFLT = 'False'
 
         # Get config information
         self.candidates = candidates
@@ -56,8 +61,21 @@ class Config():
     def vision_cred(self):
         """
         Return config vision api credential setting in GENERAL section
+        Default setting: VISION_CRED_DFLT
         """
-        return self._read_value(self.GENERAL, self.VISION_CRED)
+        return self._read_value(self.GENERAL, self.VISION_CRED, fallback_val=self.VISION_CRED_DFLT)
+
+    def headless(self):
+        """
+        Return config headless value in GENERAL section
+        """
+        _headless_mode = self._read_value(self.GENERAL, self.HEADLESS, fallback_val=self.HEADLESS_DFLT)
+        self._validate('True|False', self.HEADLESS, _headless_mode)
+
+        if _headless_mode == 'True':
+            return True
+        else:
+            return False
 
     def login_user(self):
         """
@@ -138,7 +156,7 @@ class Config():
             raise OptionFormatError(key, value)
 
     
-    def _read_value(self, section, key):
+    def _read_value(self, section, key, fallback_val=None):
         """
         Get the value of key inside section
         Input:
@@ -151,7 +169,10 @@ class Config():
             NoOptionError - Option not found
         """
         try:
-            _config_value = self._config.get(section, key)
+            if fallback_val is None:
+                _config_value = self._config.get(section, key)
+            else:
+                _config_value = self._config.get(section, key, fallback=fallback_val)
         except configparser.NoSectionError:
             raise NoSectionError(section)
         except configparser.NoOptionError:

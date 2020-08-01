@@ -46,6 +46,9 @@ function Installation() {
     if [[ ! -f "${DESTDIR}/config.ini" ]]; then
       cp config_template.ini ${DESTDIR}/config.ini
       checkCode 11 "Copy config_template.ini failed." > /dev/null
+    else 
+      cp config_template.ini ${DESTDIR}/config_template.ini
+      checkCode 11 "Copy config_template.ini failed." > /dev/null
     fi
 
     if [[ ! -d "${DESTDIR}/log" ]]; then
