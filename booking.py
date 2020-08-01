@@ -126,8 +126,13 @@ def main():
         print('Clicked', datetime.now())
         browser.accept_alert()
         time.sleep(0.3)
-    
-        
+
+    for browser in final_browsers:
+        result = browser.driver.find_element_by_id(env.ID_RESULT_MESSAGE)
+        logging = 'Result: {}'.format(result.text)
+        logger.log(logging)
+        print('')
+
 
     # Press Enter to quit
     input('Press Enter to quit.\n')
