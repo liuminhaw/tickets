@@ -2,7 +2,14 @@
 Automation daily booking process
 - sport-center (badminton)
 
-## Version 3.0.0
+## Version 3.1.0
+- Double browsers submit chance
+- Test and add use headless mode with selenium
+- Fetch and show booking result
+- Update setup with config template 
+- Check for credential file existence 
+
+#### Version 3.0.0
 - Daan sport center bandminton booking process automation
 
 ## Requirements
