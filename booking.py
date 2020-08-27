@@ -5,7 +5,7 @@
 
 # Standard library imports
 # import standard libraries here
-import sys, time
+import sys, os, time 
 import argparse
 from datetime import datetime, timedelta
 
@@ -67,6 +67,10 @@ def main():
             browser.read_conf(config, data_section)
         submit_time = config.submit_time(data_section)
         vision_cred = config.vision_cred()
+    except conf_mod.FileNotFoundError as err:
+        logging = 'file not found in current path: {}'.format(err)
+        logger.warning(logging)
+        sys.exit(15)
     except conf_mod.NoSectionError as err:
         logging = 'config file section error: {}'.format(err)
         logger.warning(logging)

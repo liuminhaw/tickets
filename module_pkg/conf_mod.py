@@ -63,7 +63,11 @@ class Config():
         Return config vision api credential setting in GENERAL section
         Default setting: VISION_CRED_DFLT
         """
-        return self._read_value(self.GENERAL, self.VISION_CRED, fallback_val=self.VISION_CRED_DFLT)
+        cred = self._read_value(self.GENERAL, self.VISION_CRED, fallback_val=self.VISION_CRED_DFLT)
+        if not os.path.isfile(cred):
+            raise FileNotFoundError(cred)
+
+        return cred 
 
     def headless(self):
         """
@@ -193,6 +197,13 @@ class ConfigNotFoundError(configError):
     Raised if not finding ini file
     """
     pass
+
+class FileNotFoundError(configError):
+    """
+    Raised if file not find
+    """
+    def __init(self, file):
+        self.message = 'File {} not found'.format(file)
 
 class NoSectionError(configError):
     """
