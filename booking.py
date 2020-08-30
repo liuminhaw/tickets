@@ -134,7 +134,7 @@ def main():
     for browser in final_browsers:
         result = browser.driver.find_element_by_id(env.ID_RESULT_MESSAGE)
         logging = 'Result: {}'.format(result.text)
-        logger.log(logging)
+        logger.info(logging)
         print('')
 
 
