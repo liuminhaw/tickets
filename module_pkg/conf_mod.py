@@ -27,6 +27,9 @@ class Config():
         self.DRIVER_COUNT = 'driver-count'
         self.HEADLESS = 'headless'
         self.EXECUTION_DELTA = 'execution-delta'
+        self.SUBMIT_TIME_SLEEP = 'submit-time-sleep'
+        self.SUBMIT_TIME_OFFSET = 'submit-time-offset'
+        self.DRIVER_TIME_SLEEP = 'driver-time-sleep'
 
         self.USER = 'user'
         self.PASSWORD = 'password'
@@ -43,6 +46,9 @@ class Config():
         self.DRIVER_COUNT_DFLT = '1'
         self.HEADLESS_DFLT = 'False'
         self.EXECUTION_DELTA_DFLT = '3'
+        self.SUBMIT_TIME_SLEEP_DFLT = '0.3'
+        self.SUBMIT_TIME_OFFSET_DFLT = '0.2'
+        self.DRIVER_TIME_SLEEP_DFLT = '0.2'
 
         # Get config information
         self.candidates = candidates
@@ -89,7 +95,7 @@ class Config():
 
     def execution_delta(self):
         """
-        Return config driver-count value in DRIVER section
+        Return config execution-delta value in DRIVER section
         """
         _delta_time = int(self._read_value(self.DRIVER, self.EXECUTION_DELTA,
             fallback_val=self.EXECUTION_DELTA_DFLT))
@@ -97,6 +103,39 @@ class Config():
             raise OptionFormatError(self.DRIVER, _delta_time)
 
         return _delta_time
+
+    def submit_time_sleep(self):
+        """
+        Return config submit-time-sleep value in DRIVER section
+        """
+        _time_sleep = float(self._read_value(self.DRIVER, self.SUBMIT_TIME_SLEEP,
+            fallback_val=self.SUBMIT_TIME_SLEEP_DFLT))
+        if _time_sleep < 0:
+            raise OptionFormatError(self.DRIVER, _time_sleep)
+
+        return _time_sleep
+
+    def submit_time_offset(self):
+        """
+        Return config submit-time-offset value in DRIVER section
+        """
+        _time_sleep = float(self._read_value(self.DRIVER, self.SUBMIT_TIME_OFFSET,
+            fallback_val=self.SUBMIT_TIME_OFFSET_DFLT))
+        if _time_sleep < 0:
+            raise OptionFormatError(self.DRIVER, _time_sleep)
+
+        return _time_sleep
+
+    def driver_time_sleep(self):
+        """
+        Return config driver-time-sleep value in DRIVER section
+        """
+        _time_sleep = float(self._read_value(self.DRIVER, self.DRIVER_TIME_SLEEP,
+            fallback_val=self.DRIVER_TIME_SLEEP_DFLT))
+        if _time_sleep < 0:
+            raise OptionFormatError(self.DRIVER, _time_sleep)
+
+        return _time_sleep
 
     def headless(self):
         """

@@ -66,6 +66,9 @@ def main():
         execution_delta = config.execution_delta()
         submit_time = config.submit_time(data_section)
         vision_cred = config.vision_cred()
+        submit_time_sleep = config.submit_time_sleep()
+        submit_time_offset = config.submit_time_offset()
+        driver_time_sleep = config.driver_time_sleep()
     except conf_mod.FileNotFoundError as err:
         logging = 'file not found in current path: {}'.format(err.message)
         logger.warning(logging)
@@ -107,6 +110,9 @@ def main():
 
     logger.info('Submit time: {}'.format(submit_time))
     logger.info('Execution time: {}'.format(execute_time))
+    logger.info('Submit time sleep: {}'.format(submit_time_sleep))
+    logger.info('Submit time offset: {}'.format(submit_time_offset))
+    logger.info('Driver time sleep: {}'.format(driver_time_sleep))
     logger.info('Booking date: {}'.format(browsers[0].booking_date))
     logger.info('Booking section: {}'.format(browsers[0].booking_section))
     logger.info('Booking time: {}'.format(browsers[0].booking_time))
@@ -142,15 +148,15 @@ def main():
 
     submit_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S')
     while datetime.now() < submit_time:
-        time.sleep(0.3)
+        time.sleep(submit_time_sleep)
 
     print('Start', datetime.now())
-    time.sleep(0.4)
+    time.sleep(submit_time_offset)
     for browser in final_browsers:
         browser.booking_button.click()
         print('Clicked', datetime.now())
         browser.accept_alert()
-        time.sleep(0.3)
+        time.sleep(driver_time_sleep)
 
     for browser in final_browsers:
         result = browser.driver.find_element_by_id(env.ID_RESULT_MESSAGE)
