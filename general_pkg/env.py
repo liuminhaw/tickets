@@ -5,7 +5,7 @@ import os
 import datetime
 
 # Global variable definitions
-VERSION = 'v3.1.0'
+VERSION = 'v3.1.0a'
 
 CONFIG_FILE = ['config.ini']
 LOG_DIR = os.path.join(os.getcwd(), 'log')
