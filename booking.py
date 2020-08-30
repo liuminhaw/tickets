@@ -62,7 +62,7 @@ def main():
         sys.exit(11)
 
     try:
-        browsers = [driver.Driver()] * config.driver_count()
+        driver_count = config.driver_count()
         execution_delta = config.execution_delta()
         submit_time = config.submit_time(data_section)
         vision_cred = config.vision_cred()
@@ -85,6 +85,10 @@ def main():
         logging = 'config file option format error: {}'.format(err.message)
         logger.warning(logging)
         sys.exit(14)
+
+    browsers = []
+    for _ in range(driver_count):
+        browsers.append(driver.Driver())
 
     try:
         for browser in browsers:
@@ -161,7 +165,7 @@ def main():
     for browser in final_browsers:
         result = browser.driver.find_element_by_id(env.ID_RESULT_MESSAGE)
         logging = 'Result: {}'.format(result.text)
-        logger.log(logging)
+        logger.info(logging)
         print('')
 
 
