@@ -2,7 +2,10 @@
 Automation daily booking process
 - sport-center (badminton)
 
-## Version 3.1.0
+## Version 3.1.0a
+- fix issue #1 wrong logger function
+
+#### Version 3.1.0
 - Double browsers submit chance
 - Test and add use headless mode with selenium
 - Fetch and show booking result
