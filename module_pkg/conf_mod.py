@@ -16,13 +16,17 @@ class Config():
 
         # Sections 
         self.GENERAL= 'GENERAL'
+        self.DRIVER = 'DRIVER'
         self.ACCOUNT = 'ACCOUNT'
 
         # Keys
         self.LOGIN_LINK = 'login-link'
         self.BOOKING_LINK = 'booking-link'
-        self.HEADLESS = 'headless'
         self.VISION_CRED = 'vision-cred'
+
+        self.DRIVER_COUNT = 'driver-count'
+        self.HEADLESS = 'headless'
+        self.EXECUTION_DELTA = 'execution-delta'
 
         self.USER = 'user'
         self.PASSWORD = 'password'
@@ -35,7 +39,10 @@ class Config():
 
         # Default value
         self.VISION_CRED_DFLT = 'credential.json'
+        
+        self.DRIVER_COUNT_DFLT = '1'
         self.HEADLESS_DFLT = 'False'
+        self.EXECUTION_DELTA_DFLT = '3'
 
         # Get config information
         self.candidates = candidates
@@ -69,11 +76,33 @@ class Config():
 
         return cred 
 
+    def driver_count(self):
+        """
+        Return config driver-count value in DRIVER section
+        """
+        _count = int(self._read_value(self.DRIVER, self.DRIVER_COUNT, 
+            fallback_val=self.DRIVER_COUNT_DFLT))
+        if _count < 1 or _count > 4:
+            raise OptionFormatError(self.DRIVER, _count)
+
+        return _count
+
+    def execution_delta(self):
+        """
+        Return config driver-count value in DRIVER section
+        """
+        _delta_time = int(self._read_value(self.DRIVER, self.EXECUTION_DELTA,
+            fallback_val=self.EXECUTION_DELTA_DFLT))
+        if _delta_time < 0:
+            raise OptionFormatError(self.DRIVER, _delta_time)
+
+        return _delta_time
+
     def headless(self):
         """
-        Return config headless value in GENERAL section
+        Return config headless value in DRIVER section
         """
-        _headless_mode = self._read_value(self.GENERAL, self.HEADLESS, fallback_val=self.HEADLESS_DFLT)
+        _headless_mode = self._read_value(self.DRIVER, self.HEADLESS, fallback_val=self.HEADLESS_DFLT)
         self._validate('True|False', self.HEADLESS, _headless_mode)
 
         if _headless_mode == 'True':

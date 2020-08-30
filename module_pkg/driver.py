@@ -24,7 +24,7 @@ class Driver():
         """
         if headless:
             options = Options()
-            options.headless = True
+            options.headless = headless 
             self.driver = webdriver.Chrome(chrome_options=options)
         else:
             self.driver = webdriver.Chrome()

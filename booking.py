@@ -61,38 +61,59 @@ def main():
         logger.info(logging)
         sys.exit(11)
 
-    browsers = [driver.Driver(), driver.Driver()]
     try:
-        for browser in browsers:
-            browser.read_conf(config, data_section)
+        browsers = [driver.Driver()] * config.driver_count()
+        execution_delta = config.execution_delta()
         submit_time = config.submit_time(data_section)
         vision_cred = config.vision_cred()
     except conf_mod.FileNotFoundError as err:
-        logging = 'file not found in current path: {}'.format(err)
+        logging = 'file not found in current path: {}'.format(err.message)
         logger.warning(logging)
         sys.exit(15)
     except conf_mod.NoSectionError as err:
-        logging = 'config file section error: {}'.format(err)
+        logging = 'config file section error: {}'.format(err.message)
         logger.warning(logging)
         sys.exit(12)
     except conf_mod.NoOptionError as err:
-        logging = 'config file option error: {}'.format(err)
+        logging = 'config file option error: {}'.format(err.message)
         logger.warning(logging)
         sys.exit(13)
     except conf_mod.OptionFormatError as err:
-        logging = 'config file option format error: {}'.format(err)
+        logging = 'config file option format error: {}'.format(err.message)
         logger.warning(logging)
         sys.exit(14)
 
+    try:
+        for browser in browsers:
+            browser.read_conf(config, data_section)
+    except conf_mod.FileNotFoundError as err:
+        logging = 'file not found in current path: {}'.format(err.message)
+        logger.warning(logging)
+        sys.exit(15)
+    except conf_mod.NoSectionError as err:
+        logging = 'config file section error: {}'.format(err.message)
+        logger.warning(logging)
+        sys.exit(12)
+    except conf_mod.NoOptionError as err:
+        logging = 'config file option error: {}'.format(err.message)
+        logger.warning(logging)
+        sys.exit(13)
+    except conf_mod.OptionFormatError as err:
+        logging = 'config file option format error: {}'.format(err.message)
+        logger.warning(logging)
+        sys.exit(14)
+
+    execute_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S') - timedelta(minutes=execution_delta)
+
     logger.info('Submit time: {}'.format(submit_time))
+    logger.info('Execution time: {}'.format(execute_time))
     logger.info('Booking date: {}'.format(browsers[0].booking_date))
     logger.info('Booking section: {}'.format(browsers[0].booking_section))
     logger.info('Booking time: {}'.format(browsers[0].booking_time))
     logger.info('Booking court: {}'.format(browsers[0].booking_court))
 
-    # Run driver 3 minutes before submit time
+    # Start drivers on execution_time
     logger.info('Waiting for execution time...')
-    execute_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S') - timedelta(minutes=3)
     while datetime.now() < execute_time:
         time.sleep(10)
 
