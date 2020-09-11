@@ -59,9 +59,9 @@ class Driver():
         element = self.driver.find_element_by_id(element_id)
         element.send_keys(text)
 
-    def find_target(self, selector, time, court):
+    def find_booking_btn(self, selector, time, court):
         """
-        Find target according to given date and court
+        Find booking button according to given date and court
         Exception:
             FindElementError
         """
@@ -75,7 +75,7 @@ class Driver():
         else: 
             FindElementError(driverError)
 
-    def read_conf(self, config, section):
+    def read_conf(self, config, section, action='book'):
         """
         Read in config settings
         Exception:
@@ -90,8 +90,10 @@ class Driver():
         self.headless = config.headless()
         self.booking_date = config.date(section)
         self.booking_section = config.section(section)
-        self.booking_time = config.time(section)
-        self.booking_court = config.court(section)
+
+        if action == 'book':
+            self.booking_time = config.time(section)
+            self.booking_court = config.court(section)
 
 
 # Exceptions

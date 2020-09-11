@@ -18,12 +18,13 @@ from selenium import webdriver
 from general_pkg import env
 from general_pkg import uncaptcha
 from general_pkg import prep
+from general_pkg import search
 
 from module_pkg import logging_class as logcl
 from module_pkg import conf_mod
 from module_pkg import driver
 
-logger = logcl.PersonalLog('booking', env.LOG_DIR)
+logger = env.LOGGER
 
 # --- CODING BLOCKS ---
 # --- ------------- ---
@@ -37,6 +38,7 @@ def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('type', choices=['daan-sport'], help='Booking running type')
     arg_parser.add_argument('-c', '--config', help='Specify configuration file')
+    arg_parser.add_argument('--free', help='Show available court', action='store_true')
     arg_parser.add_argument('-V', '--version', action='version', version='%(prog)s {}'.format(env.VERSION))
     args = arg_parser.parse_args()
 
@@ -52,8 +54,6 @@ def main():
         config_file = env.CONFIG_FILE
     logger.info('Config file: {}'.format(config_file))
 
-
-    # Read config file settings
     try:
         config = conf_mod.Config(config_file) 
     except conf_mod.ConfigNotFoundError as err:
@@ -61,6 +61,12 @@ def main():
         logger.info(logging)
         sys.exit(11)
 
+    if args.free:
+        search.search(config, data_section)
+        logger.info('Show available courts executed')
+        sys.exit(0)
+
+    # Read config file settings
     try:
         driver_count = config.driver_count()
         execution_delta = config.execution_delta()
@@ -136,7 +142,7 @@ def main():
     valid_browsers = []
     for browser in browsers:
         try:
-            browser.find_target(env.TARGETS_SELECTOR, browser.booking_time, browser.booking_court)
+            browser.find_booking_btn(env.TARGETS_SELECTOR, browser.booking_time, browser.booking_court)
             valid_browsers.append(browser)
         except driver.FindElementError as err:
             logger.info(err)

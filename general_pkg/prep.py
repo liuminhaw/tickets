@@ -51,7 +51,7 @@ def sport_prep(browser, credential):
 
     # Find target booking button
     # try:
-    #     booking_button = browser.find_target(
+    #     booking_button = browser.find_booking_btn(
     #         env.TARGETS_SELECTOR, 
     #         browser.booking_time, 
     #         browser.booking_court)
