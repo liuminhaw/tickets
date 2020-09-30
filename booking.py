@@ -62,7 +62,9 @@ def main():
         sys.exit(11)
 
     if args.free:
-        search.search(config, data_section)
+        elected = search.search(config, data_section)
+        for available_time, available_court in elected:
+            logger.info('Available time: {}, court: {}'.format(available_time ,available_court))
         logger.info('Show available courts executed')
         sys.exit(0)
 
