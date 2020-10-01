@@ -47,6 +47,21 @@ def search(config, section):
     return elected
 
 
+def search_time(config, section):
+    """
+    Search for available courts at specific time
+    """
+    candidates = search(config, section)
+    booking_time = _config_test(config.time, section)
+
+    elected = []
+    for available_time, available_court in candidates:
+        if booking_time == available_time:
+            elected.append((available_time, available_court))
+
+    return elected
+
+
 def _config_test(func, *args):
     try:
         ret_val = func(*args)

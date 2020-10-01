@@ -38,7 +38,8 @@ def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('type', choices=['daan-sport'], help='Booking running type')
     arg_parser.add_argument('-c', '--config', help='Specify configuration file')
-    arg_parser.add_argument('--free', help='Show available court', action='store_true')
+    arg_parser.add_argument('--free', help='Show available courts', action='store_true')
+    arg_parser.add_argument('--freetime', help='Test free court at specific time', action='store_true')
     arg_parser.add_argument('-V', '--version', action='version', version='%(prog)s {}'.format(env.VERSION))
     args = arg_parser.parse_args()
 
@@ -65,7 +66,14 @@ def main():
         elected = search.search(config, data_section)
         for available_time, available_court in elected:
             logger.info('Available time: {}, court: {}'.format(available_time ,available_court))
-        logger.info('Show available courts executed')
+        logger.info('Show free courts executed')
+        sys.exit(0)
+    
+    if args.freetime:
+        elected = search.search_time(config, data_section)
+        for available_time, available_court in elected:
+            logger.info('Available time: {}, court: {}'.format(available_time ,available_court))
+        logger.info('Show free time courts executed')
         sys.exit(0)
 
     # Read config file settings
