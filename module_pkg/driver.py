@@ -12,11 +12,23 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 class Driver():
-    
-    def __init__(self):
-        pass
 
-    def up(self, headless):
+    def __init__(self):
+        self.driver = None
+        self.booking_button = None
+
+        # TODO: Maybe read config settings in __init__ section
+        self.login_link = None
+        self.booking_link = None
+        self.login_user = None
+        self.login_password = None
+        self.headless = None
+        self.booking_date = None
+        self.booking_section = None
+        self.booking_time = None
+        self.booking_court = None
+
+    def driver_up(self, headless):
         """
         Create selenium driver
         Param:
@@ -24,7 +36,7 @@ class Driver():
         """
         if headless:
             options = Options()
-            options.headless = headless 
+            options.headless = headless
             self.driver = webdriver.Chrome(chrome_options=options)
         else:
             self.driver = webdriver.Chrome()
@@ -66,14 +78,14 @@ class Driver():
             FindElementError
         """
         candidates = self.driver.find_elements_by_css_selector(selector)
-        
-        for i in range(len(candidates)):
+
+        for i, _ in enumerate(candidates):
             if candidates[i].text == time and candidates[i+1].text == court:
                 self.booking_button = candidates[i+3].find_element_by_tag_name('img')
                 break
                 # return candidates[i+3].find_element_by_tag_name('img')
-        else: 
-            FindElementError(driverError)
+        else:
+            FindElementError(DriverError)
 
     def read_conf(self, config, section, action='book'):
         """
@@ -97,14 +109,12 @@ class Driver():
 
 
 # Exceptions
-class driverError(Exception):
+class DriverError(Exception):
     """
     Base class of driver exception
     """
-    pass
 
-class FindElementError(driverError):
+class FindElementError(DriverError):
     """
     Raised if failed to locate element
     """
-    pass

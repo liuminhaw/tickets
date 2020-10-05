@@ -59,7 +59,7 @@ optional arguments:
 `12` - `conf_mod` NoSectionError  
 `13` - `conf_mod` NoOptionError  
 `14` - `conf_mod` OptionFormatError  
-`15` - `conf_mod` FileNotFoundError
+`15` - `conf_mod` MissingFileError
 `21` - `booking_lib` NoMatchTextError  
 `31` - `driver` FindElementError  
 

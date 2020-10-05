@@ -2,13 +2,12 @@
 
 # Standard library imports
 import os
-import datetime
 
 # Local application imports
 from module_pkg import logging_class as logcl
 
 # Global variable definitions
-VERSION = 'v3.1.0a'
+VERSION = 'v3.1.1'
 
 CONFIG_FILE = ['config.ini']
 LOGGER = logcl.PersonalLog('booking', os.path.join(os.getcwd(), 'log'))

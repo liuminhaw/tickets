@@ -78,7 +78,7 @@ class Config():
         """
         cred = self._read_value(self.GENERAL, self.VISION_CRED, fallback_val=self.VISION_CRED_DFLT)
         if not os.path.isfile(cred):
-            raise FileNotFoundError(cred)
+            raise MissingFileError(cred)
 
         return cred 
 
@@ -166,7 +166,7 @@ class Config():
         Return config SUBMIT_TIME option in section_name section
         """
         _submit_time = self._read_value(section_name, self.SUBMIT_TIME)
-        self._validate('\d{4}/\d{2}/\d{2}-\d{2}:\d{2}:\d{2}', self.SUBMIT_TIME, _submit_time)
+        self._validate(r'\d{4}/\d{2}/\d{2}-\d{2}:\d{2}:\d{2}', self.SUBMIT_TIME, _submit_time)
 
         return _submit_time
 
@@ -175,7 +175,7 @@ class Config():
         Return config DATE option in section_name section
         """
         _date = self._read_value(section_name, self.DATE)
-        self._validate('\d{4}/\d{2}/\d{2}', self.DATE, _date)
+        self._validate(r'\d{4}/\d{2}/\d{2}', self.DATE, _date)
 
         return _date
 
@@ -200,7 +200,7 @@ class Config():
         Return config TIME option in section_name section
         """
         _time = self._read_value(section_name, self.TIME)
-        self._validate('[0-2]\d:00~[0-2]\d:00', self.TIME, _time)
+        self._validate(r'[0-2]\d:00~[0-2]\d:00', self.TIME, _time)
 
         return _time
 
@@ -245,10 +245,10 @@ class Config():
                 _config_value = self._config.get(section, key)
             else:
                 _config_value = self._config.get(section, key, fallback=fallback_val)
-        except configparser.NoSectionError:
-            raise NoSectionError(section)
-        except configparser.NoOptionError:
-            raise NoOptionError(key)
+        except configparser.NoSectionError as err:
+            raise NoSectionError(section) from err
+        except configparser.NoOptionError as err:
+            raise NoOptionError(key) from err
         else:
             return _config_value
 
@@ -258,19 +258,19 @@ class configError(Exception):
     """
     Base class of config exception
     """
-    pass
+    
 
 class ConfigNotFoundError(configError):
     """
     Raised if not finding ini file
     """
-    pass
 
-class FileNotFoundError(configError):
+class MissingFileError(configError):
     """
     Raised if file not find
     """
-    def __init(self, file):
+    def __init__(self, file):
+        configError.__init__(self)
         self.message = 'File {} not found'.format(file)
 
 class NoSectionError(configError):
@@ -278,6 +278,7 @@ class NoSectionError(configError):
     Raised by configparser.NoSectionError
     """
     def __init__(self, section):
+        configError.__init__(self)
         self.message = '{} section not found'.format(section)
 
 class NoOptionError(configError):
@@ -285,6 +286,7 @@ class NoOptionError(configError):
     Raised by configparser.NoOptionError
     """
     def __init__(self, option):
+        configError.__init__(self)
         self.message = '{} option not found'.format(option)
 
 class OptionFormatError(configError):
@@ -292,4 +294,5 @@ class OptionFormatError(configError):
     Raised if option is in wrong format
     """
     def __init__(self, option, value):
+        configError.__init__(self)
         self.message = '{} wrong format: {}'.format(option, value)

@@ -5,22 +5,20 @@
 
 # Standard library imports
 # import standard libraries here
-import sys, os, time 
+import sys
+import time
 import argparse
 from datetime import datetime, timedelta
 
 # Third party library imports
 # import third party libraries here
-from selenium import webdriver
 
 # Local application imports
 # import self defined applications here
 from general_pkg import env
-from general_pkg import uncaptcha
 from general_pkg import prep
 from general_pkg import search
 
-from module_pkg import logging_class as logcl
 from module_pkg import conf_mod
 from module_pkg import driver
 
@@ -56,7 +54,7 @@ def main():
     logger.info('Config file: {}'.format(config_file))
 
     try:
-        config = conf_mod.Config(config_file) 
+        config = conf_mod.Config(config_file)
     except conf_mod.ConfigNotFoundError as err:
         logging = 'Config file config.ini not found: {}'.format(err)
         logger.info(logging)
@@ -68,7 +66,7 @@ def main():
             logger.info('Available time: {}, court: {}'.format(available_time ,available_court))
         logger.info('Show free courts executed')
         sys.exit(0)
-    
+
     if args.freetime:
         elected = search.search_time(config, data_section)
         for available_time, available_court in elected:
@@ -85,7 +83,7 @@ def main():
         submit_time_sleep = config.submit_time_sleep()
         submit_time_offset = config.submit_time_offset()
         driver_time_sleep = config.driver_time_sleep()
-    except conf_mod.FileNotFoundError as err:
+    except conf_mod.MissingFileError as err:
         logging = 'file not found in current path: {}'.format(err.message)
         logger.warning(logging)
         sys.exit(15)
@@ -109,7 +107,7 @@ def main():
     try:
         for browser in browsers:
             browser.read_conf(config, data_section)
-    except conf_mod.FileNotFoundError as err:
+    except conf_mod.MissingFileError as err:
         logging = 'file not found in current path: {}'.format(err.message)
         logger.warning(logging)
         sys.exit(15)

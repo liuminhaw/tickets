@@ -85,7 +85,6 @@ class NoMatchTextError(Exception):
     """
     Raised if no match found in captcha
     """
-    pass
 
 
 

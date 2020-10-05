@@ -1,15 +1,19 @@
 # -*- coding:UTF-8 -*-
+"""
+Search for available courts with option --free and --freetime
+"""
 
 # Standard library imports
+import sys
 import re
 
 # Third party library imports
+import selenium
 
 # Local application imports
 from general_pkg import env
 from general_pkg import prep
 
-from module_pkg import logging_class as logcl
 from module_pkg import conf_mod
 from module_pkg import driver
 
@@ -33,17 +37,17 @@ def search(config, section):
 
     candidates = browser.driver.find_elements_by_css_selector(env.TARGETS_SELECTOR)
     elected = []
-    for i in range(len(candidates)):
+    for i, candidate in enumerate(candidates):
         try:
-            element = candidates[i].find_element_by_tag_name('img')
+            element = candidate.find_element_by_tag_name('img')
             if element.get_attribute('src') == env.AVAILABLE_BTN_SRC:
                 available_time = candidates[i-3].text
                 available_court = candidates[i-2].text
-                if re.compile(r'[0-2]\d:00~[0-2]\d:00').fullmatch(available_time) != None:
+                if re.compile(r'[0-2]\d:00~[0-2]\d:00').fullmatch(available_time) is not None:
                     elected.append((available_time, available_court))
-        except:
+        except selenium.common.exceptions.NoSuchElementException:
             pass
-    
+
     return elected
 
 
@@ -65,7 +69,7 @@ def search_time(config, section):
 def _config_test(func, *args):
     try:
         ret_val = func(*args)
-    except conf_mod.FileNotFoundError as err:
+    except conf_mod.MissingFileError as err:
         logging = 'file not found in current path: {}'.format(err.message)
         logger.warning(logging)
         sys.exit(15)
