@@ -2,7 +2,17 @@
 Automation daily booking process
 - sport-center (badminton)
 
-## Version 3.1.0a
+## Version 3.1.1
+- New feature `--free`: free court check on specific date and section
+- New feature `--freetime`: free court check on specific date and time
+- Config setting: DRIVER -> driver-count
+- Config setting: DRIVER -> execution-delta
+- Config setting: DRIVER -> headless mode
+- Config setting: DRIVER -> submit-time-sleep
+- Config setting: DRIVER -> submit-time-offset
+- Config setting: DRIVER -> driver-time-sleep
+
+#### Version 3.1.0a
 - fix issue #1 wrong logger function
 
 #### Version 3.1.0
@@ -25,7 +35,7 @@ Solve login captcha using GCP Vision API
 
 ## Usage
 ```bash
-usage: booking.py [-h] [-c CONFIG] [-V] {daan-sport}
+usage: booking.py [-h] [-c CONFIG] [--free] [--freetime] [-V] {daan-sport}
 
 positional arguments:
   {daan-sport}          Booking running type
@@ -34,8 +44,11 @@ optional arguments:
   -h, --help            show this help message and exit
   -c CONFIG, --config CONFIG
                         Specify configuration file
+  --free                Show available courts
+  --freetime            Test free court at specific time
   -V, --version         show program's version number and exit
 ```
+
 #### Setup
 ```bash
 ./setup.sh DESTINATION
