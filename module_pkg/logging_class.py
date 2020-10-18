@@ -4,11 +4,12 @@ Program:
 Author:
     haw
 Version:
-    1.2.0
+    1.2.1
 """
 
-import sys, os, errno
-import logging, datetime
+import os
+import logging
+import datetime
 from pathlib import Path
 
 class PersonalLog():
@@ -44,31 +45,46 @@ class PersonalLog():
         self.logger.setLevel(logging.DEBUG)
 
         # Log handlers
-        format = logging.Formatter('%(asctime)-12s %(levelname)-8s %(name)-10s  %(message)-12s')
+        log_format = logging.Formatter('%(asctime)-12s %(levelname)-8s %(name)-10s  %(message)-12s')
         file_handle = logging.FileHandler(self.log_file)
-        file_handle.setFormatter(format)
+        file_handle.setFormatter(log_format)
         file_handle.setLevel(logging.INFO)
 
         std_handle = logging.StreamHandler()
-        std_handle.setFormatter(format)
+        std_handle.setFormatter(log_format)
         std_handle.setLevel(logging.DEBUG)
 
         self.logger.addHandler(file_handle)
         self.logger.addHandler(std_handle)
 
     def debug(self, message):
+        """
+        Output logging message - debug level
+        """
         self.logger.debug(message)
 
     def info(self, message):
+        """
+        Output logging message - info level
+        """
         self.logger.info(message)
 
     def warning(self, message):
-        self.logger.warn(message)
+        """
+        Output logging message - warnging level
+        """
+        self.logger.warning(message)
 
     def error(self, message):
+        """
+        Output logging message - error level
+        """
         self.logger.error(message)
 
     def critical(self, message):
+        """
+        Output logging message - critical level
+        """
         self.logger.critical(message)
 
 

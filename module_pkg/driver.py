@@ -12,12 +12,14 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 class Driver():
+    """
+    Web driver for automation usage when running ticket program
+    """
 
     def __init__(self):
         self.driver = None
         self.booking_button = None
 
-        # TODO: Maybe read config settings in __init__ section
         self.login_link = None
         self.booking_link = None
         self.login_user = None
@@ -42,6 +44,9 @@ class Driver():
             self.driver = webdriver.Chrome()
 
     def down(self):
+        """
+        Close selenium driver (self.driver)
+        """
         self.driver.close()
 
     def get(self, url):

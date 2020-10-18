@@ -1,13 +1,14 @@
 # -*- coding: UTF-8 -*-
 """
 captcha resolve used in booking program
-Author: 
+Author:
     haw
 """
 
 # Standard library imports
 import os
-import io, re
+import io
+import re
 
 # Thire party library imports
 from PIL import Image
@@ -73,11 +74,11 @@ def _detect_text(img_path, key):
 
     for text in texts:
         match_string = re.search(r'\d{5}', text.description)
-        if match_string != None:
+        if match_string is not None:
             return match_string.group(0)
         else:
             raise NoMatchTextError('No match in detected text')
-        
+
 
 
 # Exceptions
@@ -85,8 +86,3 @@ class NoMatchTextError(Exception):
     """
     Raised if no match found in captcha
     """
-
-
-
-
-

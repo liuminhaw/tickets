@@ -6,6 +6,9 @@ import os
 import re
 
 class Config():
+    """
+    Class for configuration (ini file)
+    """
 
     def __init__(self, candidates):
         """
@@ -14,41 +17,41 @@ class Config():
         """
         # self.HOME = str(pathlib.Path.home())
 
-        # Sections 
-        self.GENERAL= 'GENERAL'
-        self.DRIVER = 'DRIVER'
-        self.ACCOUNT = 'ACCOUNT'
+        # Sections
+        self._genaral= 'GENERAL'
+        self._driver = 'DRIVER'
+        self._account = 'ACCOUNT'
 
         # Keys
-        self.LOGIN_LINK = 'login-link'
-        self.BOOKING_LINK = 'booking-link'
-        self.VISION_CRED = 'vision-cred'
+        self._login_link = 'login-link'
+        self._booking_link = 'booking-link'
+        self._vision_cred = 'vision-cred'
 
-        self.DRIVER_COUNT = 'driver-count'
-        self.HEADLESS = 'headless'
-        self.EXECUTION_DELTA = 'execution-delta'
-        self.SUBMIT_TIME_SLEEP = 'submit-time-sleep'
-        self.SUBMIT_TIME_OFFSET = 'submit-time-offset'
-        self.DRIVER_TIME_SLEEP = 'driver-time-sleep'
+        self._driver_count = 'driver-count'
+        self._headless = 'headless'
+        self._execution_delta = 'execution-delta'
+        self._submit_time_sleep = 'submit-time-sleep'
+        self._submit_time_offset = 'submit-time-offset'
+        self._driver_time_sleep = 'driver-time-sleep'
 
-        self.USER = 'user'
-        self.PASSWORD = 'password'
+        self._user = 'user'
+        self._password = 'password'
 
-        self.SUBMIT_TIME = 'submit-time'
-        self.DATE = 'date'
-        self.SECTION = 'section'
-        self.TIME = 'time'
-        self.COURT = 'court'
+        self._submit_time = 'submit-time'
+        self._date = 'date'
+        self._section = 'section'
+        self._time = 'time'
+        self._court = 'court'
 
         # Default value
-        self.VISION_CRED_DFLT = 'credential.json'
-        
-        self.DRIVER_COUNT_DFLT = '1'
-        self.HEADLESS_DFLT = 'False'
-        self.EXECUTION_DELTA_DFLT = '3'
-        self.SUBMIT_TIME_SLEEP_DFLT = '0.3'
-        self.SUBMIT_TIME_OFFSET_DFLT = '0.2'
-        self.DRIVER_TIME_SLEEP_DFLT = '0.2'
+        self._vision_cred_dflt = 'credential.json'
+
+        self._driver_count_dflt = '1'
+        self._headless_dflt = 'False'
+        self._execution_delta_dflt = '3'
+        self._submit_time_sleep_dflt = '0.3'
+        self._submit_time_offset_dflt = '0.2'
+        self._driver_time_sleep_dflt = '0.2'
 
         # Get config information
         self.candidates = candidates
@@ -57,39 +60,39 @@ class Config():
 
         # Make sure ini file exist
         if len(self._config_found) == 0:
-            raise ConfigNotFoundError(configError)
+            raise ConfigNotFoundError(ConfigError)
 
     def login_link(self):
         """
         Return config login-link option in GENERAL section
         """
-        return self._read_value(self.GENERAL, self.LOGIN_LINK)
+        return self._read_value(self._genaral, self._login_link)
 
     def booking_link(self):
         """
         Return config login-link option in GENERAL section
         """
-        return self._read_value(self.GENERAL, self.BOOKING_LINK)
+        return self._read_value(self._genaral, self._booking_link)
 
     def vision_cred(self):
         """
         Return config vision api credential setting in GENERAL section
         Default setting: VISION_CRED_DFLT
         """
-        cred = self._read_value(self.GENERAL, self.VISION_CRED, fallback_val=self.VISION_CRED_DFLT)
+        cred = self._read_value(self._genaral, self._vision_cred, fallback_val=self._vision_cred_dflt)
         if not os.path.isfile(cred):
             raise MissingFileError(cred)
 
-        return cred 
+        return cred
 
     def driver_count(self):
         """
         Return config driver-count value in DRIVER section
         """
-        _count = int(self._read_value(self.DRIVER, self.DRIVER_COUNT, 
-            fallback_val=self.DRIVER_COUNT_DFLT))
+        _count = int(self._read_value(self._driver, self._driver_count,
+            fallback_val=self._driver_count_dflt))
         if _count < 1 or _count > 4:
-            raise OptionFormatError(self.DRIVER, _count)
+            raise OptionFormatError(self._driver, _count)
 
         return _count
 
@@ -97,10 +100,10 @@ class Config():
         """
         Return config execution-delta value in DRIVER section
         """
-        _delta_time = int(self._read_value(self.DRIVER, self.EXECUTION_DELTA,
-            fallback_val=self.EXECUTION_DELTA_DFLT))
+        _delta_time = int(self._read_value(self._driver, self._execution_delta,
+            fallback_val=self._execution_delta_dflt))
         if _delta_time < 0:
-            raise OptionFormatError(self.DRIVER, _delta_time)
+            raise OptionFormatError(self._driver, _delta_time)
 
         return _delta_time
 
@@ -108,10 +111,10 @@ class Config():
         """
         Return config submit-time-sleep value in DRIVER section
         """
-        _time_sleep = float(self._read_value(self.DRIVER, self.SUBMIT_TIME_SLEEP,
-            fallback_val=self.SUBMIT_TIME_SLEEP_DFLT))
+        _time_sleep = float(self._read_value(self._driver, self._submit_time_sleep,
+            fallback_val=self._submit_time_sleep_dflt))
         if _time_sleep < 0:
-            raise OptionFormatError(self.DRIVER, _time_sleep)
+            raise OptionFormatError(self._driver, _time_sleep)
 
         return _time_sleep
 
@@ -119,10 +122,10 @@ class Config():
         """
         Return config submit-time-offset value in DRIVER section
         """
-        _time_sleep = float(self._read_value(self.DRIVER, self.SUBMIT_TIME_OFFSET,
-            fallback_val=self.SUBMIT_TIME_OFFSET_DFLT))
+        _time_sleep = float(self._read_value(self._driver, self._submit_time_offset,
+            fallback_val=self._submit_time_offset_dflt))
         if _time_sleep < 0:
-            raise OptionFormatError(self.DRIVER, _time_sleep)
+            raise OptionFormatError(self._driver, _time_sleep)
 
         return _time_sleep
 
@@ -130,10 +133,10 @@ class Config():
         """
         Return config driver-time-sleep value in DRIVER section
         """
-        _time_sleep = float(self._read_value(self.DRIVER, self.DRIVER_TIME_SLEEP,
-            fallback_val=self.DRIVER_TIME_SLEEP_DFLT))
+        _time_sleep = float(self._read_value(self._driver, self._driver_time_sleep,
+            fallback_val=self._driver_time_sleep_dflt))
         if _time_sleep < 0:
-            raise OptionFormatError(self.DRIVER, _time_sleep)
+            raise OptionFormatError(self._driver, _time_sleep)
 
         return _time_sleep
 
@@ -141,8 +144,8 @@ class Config():
         """
         Return config headless value in DRIVER section
         """
-        _headless_mode = self._read_value(self.DRIVER, self.HEADLESS, fallback_val=self.HEADLESS_DFLT)
-        self._validate('True|False', self.HEADLESS, _headless_mode)
+        _headless_mode = self._read_value(self._driver, self._headless, fallback_val=self._headless_dflt)
+        self._validate('True|False', self._headless, _headless_mode)
 
         if _headless_mode == 'True':
             return True
@@ -153,20 +156,20 @@ class Config():
         """
         Return config user option in ACCOUNT section
         """
-        return self._read_value(self.ACCOUNT, self.USER)
+        return self._read_value(self._account, self._user)
 
     def login_password(self):
         """
         Return config password option in ACCOUNT section
         """
-        return self._read_value(self.ACCOUNT, self.PASSWORD)
+        return self._read_value(self._account, self._password)
 
     def submit_time(self, section_name):
         """
         Return config SUBMIT_TIME option in section_name section
         """
-        _submit_time = self._read_value(section_name, self.SUBMIT_TIME)
-        self._validate(r'\d{4}/\d{2}/\d{2}-\d{2}:\d{2}:\d{2}', self.SUBMIT_TIME, _submit_time)
+        _submit_time = self._read_value(section_name, self._submit_time)
+        self._validate(r'\d{4}/\d{2}/\d{2}-\d{2}:\d{2}:\d{2}', self._submit_time, _submit_time)
 
         return _submit_time
 
@@ -174,8 +177,8 @@ class Config():
         """
         Return config DATE option in section_name section
         """
-        _date = self._read_value(section_name, self.DATE)
-        self._validate(r'\d{4}/\d{2}/\d{2}', self.DATE, _date)
+        _date = self._read_value(section_name, self._date)
+        self._validate(r'\d{4}/\d{2}/\d{2}', self._date, _date)
 
         return _date
 
@@ -183,8 +186,8 @@ class Config():
         """
         Return config SECTION option in section_name section
         """
-        _section = self._read_value(section_name, self.SECTION) 
-        self._validate('morning|evening|night', self.SECTION, _section)
+        _section = self._read_value(section_name, self._section)
+        self._validate('morning|evening|night', self._section, _section)
 
         if _section == 'morning':
             return '1'
@@ -193,14 +196,14 @@ class Config():
         elif _section == 'night':
             return '3'
         else:
-            raise OptionFormatError(self.SECTION, _section)
+            raise OptionFormatError(self._section, _section)
 
     def time(self, section_name):
         """
         Return config TIME option in section_name section
         """
-        _time = self._read_value(section_name, self.TIME)
-        self._validate(r'[0-2]\d:00~[0-2]\d:00', self.TIME, _time)
+        _time = self._read_value(section_name, self._time)
+        self._validate(r'[0-2]\d:00~[0-2]\d:00', self._time, _time)
 
         return _time
 
@@ -208,8 +211,8 @@ class Config():
         """
         Return config COURT option in section_name section
         """
-        _court = self._read_value(section_name, self.COURT)
-        self._validate('羽[0-9]|羽10', self.COURT, _court)
+        _court = self._read_value(section_name, self._court)
+        self._validate('羽[0-9]|羽10', self._court, _court)
 
         return _court
 
@@ -224,10 +227,10 @@ class Config():
         """
         _re_pattern = re.compile(r'{}'.format(pattern))
 
-        if _re_pattern.fullmatch(value) == None:
+        if _re_pattern.fullmatch(value) is None:
             raise OptionFormatError(key, value)
 
-    
+
     def _read_value(self, section, key, fallback_val=None):
         """
         Get the value of key inside section
@@ -254,45 +257,45 @@ class Config():
 
 
 # Exceptions
-class configError(Exception):
+class ConfigError(Exception):
     """
     Base class of config exception
     """
-    
 
-class ConfigNotFoundError(configError):
+
+class ConfigNotFoundError(ConfigError):
     """
     Raised if not finding ini file
     """
 
-class MissingFileError(configError):
+class MissingFileError(ConfigError):
     """
     Raised if file not find
     """
     def __init__(self, file):
-        configError.__init__(self)
+        ConfigError.__init__(self)
         self.message = 'File {} not found'.format(file)
 
-class NoSectionError(configError):
+class NoSectionError(ConfigError):
     """
     Raised by configparser.NoSectionError
     """
     def __init__(self, section):
-        configError.__init__(self)
+        ConfigError.__init__(self)
         self.message = '{} section not found'.format(section)
 
-class NoOptionError(configError):
+class NoOptionError(ConfigError):
     """
     Raised by configparser.NoOptionError
     """
     def __init__(self, option):
-        configError.__init__(self)
+        ConfigError.__init__(self)
         self.message = '{} option not found'.format(option)
 
-class OptionFormatError(configError):
+class OptionFormatError(ConfigError):
     """
     Raised if option is in wrong format
     """
     def __init__(self, option, value):
-        configError.__init__(self)
+        ConfigError.__init__(self)
         self.message = '{} wrong format: {}'.format(option, value)
