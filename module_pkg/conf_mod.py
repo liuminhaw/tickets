@@ -147,10 +147,7 @@ class Config():
         _headless_mode = self._read_value(self._driver, self._headless, fallback_val=self._headless_dflt)
         self._validate('True|False', self._headless, _headless_mode)
 
-        if _headless_mode == 'True':
-            return True
-        else:
-            return False
+        return _headless_mode == 'True'
 
     def login_user(self):
         """
@@ -191,12 +188,11 @@ class Config():
 
         if _section == 'morning':
             return '1'
-        elif _section == 'evening':
+        if _section == 'evening':
             return '2'
-        elif _section == 'night':
+        if _section == 'night':
             return '3'
-        else:
-            raise OptionFormatError(self._section, _section)
+        raise OptionFormatError(self._section, _section)
 
     def time(self, section_name):
         """
@@ -216,8 +212,8 @@ class Config():
 
         return _court
 
-
-    def _validate(self, pattern, key, value):
+    @classmethod
+    def _validate(cls, pattern, key, value):
         """
         Test to make sure there is value for all options
         Input:

@@ -76,8 +76,7 @@ def _detect_text(img_path, key):
         match_string = re.search(r'\d{5}', text.description)
         if match_string is not None:
             return match_string.group(0)
-        else:
-            raise NoMatchTextError('No match in detected text')
+        raise NoMatchTextError('No match in detected text')
 
 
 
