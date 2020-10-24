@@ -9,6 +9,9 @@ class Config():
     """
     Class for configuration (ini file)
     """
+    GENERAL = 'GENERAL'
+    DRIVER = 'DRIVER'
+    ACCOUNT = 'ACCOUNT'
 
     def __init__(self, candidates):
         """
@@ -16,11 +19,6 @@ class Config():
             candidates - ini config files list
         """
         # self.HOME = str(pathlib.Path.home())
-
-        # Sections
-        self._genaral= 'GENERAL'
-        self._driver = 'DRIVER'
-        self._account = 'ACCOUNT'
 
         # Keys
         self._login_link = 'login-link'
@@ -66,20 +64,20 @@ class Config():
         """
         Return config login-link option in GENERAL section
         """
-        return self._read_value(self._genaral, self._login_link)
+        return self._read_value(self.GENERAL, self._login_link)
 
     def booking_link(self):
         """
         Return config login-link option in GENERAL section
         """
-        return self._read_value(self._genaral, self._booking_link)
+        return self._read_value(self.GENERAL, self._booking_link)
 
     def vision_cred(self):
         """
         Return config vision api credential setting in GENERAL section
         Default setting: VISION_CRED_DFLT
         """
-        cred = self._read_value(self._genaral, self._vision_cred, fallback_val=self._vision_cred_dflt)
+        cred = self._read_value(self.GENERAL, self._vision_cred, fallback_val=self._vision_cred_dflt)
         if not os.path.isfile(cred):
             raise MissingFileError(cred)
 
@@ -89,10 +87,10 @@ class Config():
         """
         Return config driver-count value in DRIVER section
         """
-        _count = int(self._read_value(self._driver, self._driver_count,
+        _count = int(self._read_value(self.DRIVER, self._driver_count,
             fallback_val=self._driver_count_dflt))
         if _count < 1 or _count > 4:
-            raise OptionFormatError(self._driver, _count)
+            raise OptionFormatError(self.DRIVER, _count)
 
         return _count
 
@@ -100,10 +98,10 @@ class Config():
         """
         Return config execution-delta value in DRIVER section
         """
-        _delta_time = int(self._read_value(self._driver, self._execution_delta,
+        _delta_time = int(self._read_value(self.DRIVER, self._execution_delta,
             fallback_val=self._execution_delta_dflt))
         if _delta_time < 0:
-            raise OptionFormatError(self._driver, _delta_time)
+            raise OptionFormatError(self.DRIVER, _delta_time)
 
         return _delta_time
 
@@ -111,10 +109,10 @@ class Config():
         """
         Return config submit-time-sleep value in DRIVER section
         """
-        _time_sleep = float(self._read_value(self._driver, self._submit_time_sleep,
+        _time_sleep = float(self._read_value(self.DRIVER, self._submit_time_sleep,
             fallback_val=self._submit_time_sleep_dflt))
         if _time_sleep < 0:
-            raise OptionFormatError(self._driver, _time_sleep)
+            raise OptionFormatError(self.DRIVER, _time_sleep)
 
         return _time_sleep
 
@@ -122,10 +120,10 @@ class Config():
         """
         Return config submit-time-offset value in DRIVER section
         """
-        _time_sleep = float(self._read_value(self._driver, self._submit_time_offset,
+        _time_sleep = float(self._read_value(self.DRIVER, self._submit_time_offset,
             fallback_val=self._submit_time_offset_dflt))
         if _time_sleep < 0:
-            raise OptionFormatError(self._driver, _time_sleep)
+            raise OptionFormatError(self.DRIVER, _time_sleep)
 
         return _time_sleep
 
@@ -133,10 +131,10 @@ class Config():
         """
         Return config driver-time-sleep value in DRIVER section
         """
-        _time_sleep = float(self._read_value(self._driver, self._driver_time_sleep,
+        _time_sleep = float(self._read_value(self.DRIVER, self._driver_time_sleep,
             fallback_val=self._driver_time_sleep_dflt))
         if _time_sleep < 0:
-            raise OptionFormatError(self._driver, _time_sleep)
+            raise OptionFormatError(self.DRIVER, _time_sleep)
 
         return _time_sleep
 
@@ -144,7 +142,7 @@ class Config():
         """
         Return config headless value in DRIVER section
         """
-        _headless_mode = self._read_value(self._driver, self._headless, fallback_val=self._headless_dflt)
+        _headless_mode = self._read_value(self.DRIVER, self._headless, fallback_val=self._headless_dflt)
         self._validate('True|False', self._headless, _headless_mode)
 
         return _headless_mode == 'True'
@@ -153,13 +151,13 @@ class Config():
         """
         Return config user option in ACCOUNT section
         """
-        return self._read_value(self._account, self._user)
+        return self._read_value(self.ACCOUNT, self._user)
 
     def login_password(self):
         """
         Return config password option in ACCOUNT section
         """
-        return self._read_value(self._account, self._password)
+        return self._read_value(self.ACCOUNT, self._password)
 
     def submit_time(self, section_name):
         """
