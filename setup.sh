@@ -58,8 +58,17 @@ function Installation() {
     cp -r module_pkg ${DESTDIR}
     checkCode 11 "Copy module_pkg directory failed." > /dev/null
 
-    cp -r gcp_template ${DESTDIR}/gcp
-    checkCode 11 "Copy gcp directory failed."
+    if [[ ! -d ${DESTDIR}/gcp ]]; then
+      cp -r gcp_template ${DESTDIR}/gcp
+      checkCode 11 "Copy gcp directory failed."
+    elif [[ ! -d ${DESTDIR}/gcp_template ]]; then
+      cp -r gcp_template ${DESTDIR}/gcp_template
+      checkCode 11 "Copy gcp directory failed."
+    else
+      rm -rf ${DESTDIR}/gcp_template
+      cp -r gcp_template ${DESTDIR}/gcp_template
+      checkCode 11 "Copy gcp directory failed."
+    fi
 
     if [[ ! -f "${DESTDIR}/config.ini" ]]; then
       cp config_template.ini ${DESTDIR}/config.ini
