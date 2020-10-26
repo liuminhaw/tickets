@@ -1,0 +1,3 @@
+cat <<-EOF > ${_CONFIG_TEMPLATE}
+__BELOW__
+EOF
