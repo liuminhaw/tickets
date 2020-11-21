@@ -2,7 +2,10 @@
 Automation daily booking process
 - sport-center (badminton)
 
-## Version 3.1.1
+## Version 3.1.1-gcp
+- Automatically deploy running program to gcp compute engine
+
+#### Version 3.1.1
 - New feature `--free`: free court check on specific date and section
 - New feature `--freetime`: free court check on specific date and time
 - Config setting: DRIVER -> driver-count
@@ -32,6 +35,16 @@ Solve login captcha using GCP Vision API
     - Service account credential to use API service (default: `credential.json`)
 - [Vision API reference](https://cloud.google.com/vision/docs/ocr#vision_text_detection-python)
 
+#### GCP Compute Engine
+Deploying and run booking program on gcp cloud compute
+- `gcloud` command installed
+- machine image on gcp
+    - `google-chrome` installed: [reference](https://hackmd.io/@liuminhaw/chrome)
+    - selenium `chromedriver` installed: [reference](https://hackmd.io/@liuminhaw/chrome)
+    - `tmux` command installed
+```bash
+./run-gcp.sh
+```
 
 ## Usage
 ```bash
@@ -49,10 +62,17 @@ optional arguments:
   -V, --version         show program's version number and exit
 ```
 
+#### Run on gcp compute engine
+First fill in configuration data `gcp_template` directory, then execute script
+```bash
+./run-gcp.sh
+```
+
 #### Setup
 ```bash
 ./setup.sh DESTINATION
 ```
+
 
 ## Error Code
 `11` - `conf_mod` ConfigNotFoundError  
