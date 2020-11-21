@@ -12,10 +12,25 @@
 #   15 - Make directory failed
 #   17 - Download file failed
 
+# ----------------------------------------------------------------------------
+# Show usage message
+#
+# Usage: show_help
+# ----------------------------------------------------------------------------
+show_help() {
+cat << EOF
+Usage: ${0##*/} [--help] DESTINATION
+    --help                      Display this help message and exit
+EOF
 
+exit 1
+}
+
+# ---------------------------------
 # Check exit code function
-# USAGE:
-#   checkCode EXITCODE MESSAGE
+#
+# Usage: checkCode EXITCODE MESSAGE
+# ---------------------------------
 function checkCode() {
   if [[ ${?} -ne 0 ]]; then
     echo ${2}
@@ -43,12 +58,29 @@ function Installation() {
     cp -r module_pkg ${DESTDIR}
     checkCode 11 "Copy module_pkg directory failed." > /dev/null
 
+    if [[ ! -d ${DESTDIR}/gcp ]]; then
+      cp -r gcp_template ${DESTDIR}/gcp
+      checkCode 11 "Copy gcp directory failed."
+    elif [[ ! -d ${DESTDIR}/gcp_template ]]; then
+      cp -r gcp_template ${DESTDIR}/gcp_template
+      checkCode 11 "Copy gcp directory failed."
+    else
+      rm -rf ${DESTDIR}/gcp_template
+      cp -r gcp_template ${DESTDIR}/gcp_template
+      checkCode 11 "Copy gcp directory failed."
+    fi
+
     if [[ ! -f "${DESTDIR}/config.ini" ]]; then
       cp config_template.ini ${DESTDIR}/config.ini
       checkCode 11 "Copy config_template.ini failed." > /dev/null
     else 
       cp config_template.ini ${DESTDIR}/config_template.ini
       checkCode 11 "Copy config_template.ini failed." > /dev/null
+    fi
+
+    if [[ ! -d "${DESTDIR}/tmp" ]]; then
+      mkdir "${DESTDIR}/tmp"
+      checkCode 15 "Make tmp directory filed." > /dev/null
     fi
 
     if [[ ! -d "${DESTDIR}/log" ]]; then
@@ -59,12 +91,24 @@ function Installation() {
 
 
 # Calling setup format check
-USAGE="setup.sh DESTINATION"
-
 if [[ ${#} -ne 1 ]];  then
-    echo -e "USAGE:\n    ${USAGE}"
-    exit 1
+  show_help
 fi
+
+while :; do
+    case ${1} in
+        --help)
+            show_help
+            ;;
+        -?*)
+            echo -e "[WARN] Unknown option (ignored): ${1}" 1>&2
+            ;;
+        *)  # Default case: no more options
+            break
+    esac
+
+    shift
+done
 
 if [[ ! -d ${1} ]]; then
     echo "ERROR: Destination directory does not exist"

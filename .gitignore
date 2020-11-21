@@ -111,3 +111,6 @@ config.ini
 
 # temporary file
 tmp/
+
+# config files for gcp
+gcp/
