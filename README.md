@@ -2,7 +2,13 @@
 Automation daily booking process
 - sport-center (badminton)
 
-## Version 3.1.1-gcp
+
+## Vesion 3.1.2
+- Issue #2: config error make another exception occur
+- Issue #3: Driver class read_conf restructure
+- Modify code referencing plint coding style
+
+#### Version 3.1.1-gcp
 - Automatically deploy running program to gcp compute engine
 
 #### Version 3.1.1
