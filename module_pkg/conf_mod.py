@@ -5,6 +5,10 @@ import configparser
 import os
 import re
 
+# Local application imports
+# import self defined applications here
+from general_pkg import env
+
 class Config():
     """
     Class for configuration (ini file)
@@ -25,7 +29,8 @@ class Config():
         self._booking_link = 'booking-link'
         self._vision_cred = 'vision-cred'
 
-        self._driver_count = 'driver-count'
+        # self._driver_count = 'driver-count'
+        self._submit_count = 'submit-count'
         self._headless = 'headless'
         self._execution_delta = 'execution-delta'
         self._submit_time_sleep = 'submit-time-sleep'
@@ -83,11 +88,11 @@ class Config():
 
         return cred
 
-    def driver_count(self):
+    def submit_count(self):
         """
-        Return config driver-count value in DRIVER section
+        Return config submit-count value in DRIVER section
         """
-        _count = int(self._read_value(self.DRIVER, self._driver_count,
+        _count = int(self._read_value(self.DRIVER, self._submit_count,
             fallback_val=self._driver_count_dflt))
         if _count < 1 or _count > 4:
             raise OptionFormatError(self.DRIVER, _count)
@@ -197,7 +202,7 @@ class Config():
         Return config TIME option in section_name section
         """
         _time = self._read_value(section_name, self._time)
-        self._validate(r'[0-2]\d:00~[0-2]\d:00', self._time, _time)
+        self._validate(r'[0-2]\d', self._time, _time)
 
         return _time
 
@@ -208,7 +213,12 @@ class Config():
         _court = self._read_value(section_name, self._court)
         self._validate('羽[0-9]|羽10', self._court, _court)
 
-        return _court
+        _ret = {
+            'court': _court,
+            'code': env.COURT_CODE[_court]
+        }
+
+        return _ret
 
     @classmethod
     def _validate(cls, pattern, key, value):

@@ -39,11 +39,11 @@ def sport_prep(browser, credential):
     browser.click(env.ID_LOGIN_BTN)
 
     # Directing to booking page
-    booking_link = '{link}&D={date}&D2={section}'.format(
-        link=browser.booking_link,
-        date=browser.booking_date,
-        section=browser.booking_section)
-    browser.get(booking_link)
+    # booking_link = '{link}&D={date}&D2={section}'.format(
+    #     link=browser.booking_link,
+    #     date=browser.booking_date,
+    #     section=browser.booking_section)
+    # browser.get(booking_link)
 
 
 # Exceptions

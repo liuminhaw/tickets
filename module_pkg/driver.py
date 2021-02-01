@@ -18,6 +18,7 @@ class Driver():
     def __init__(self):
         self.driver = None
         self.booking_button = None
+        self.cookie = None
 
         self.login_link = None
         self.booking_link = None
@@ -53,6 +54,12 @@ class Driver():
         Open url page on driver
         """
         self.driver.get(url)
+
+    def get_cookie(self, cookie_name):
+        """
+        Get cookie value of specific name
+        """
+        self.cookie = self.driver.get_cookie(cookie_name)['value']
 
     def click(self, element_id):
         """
@@ -90,7 +97,7 @@ class Driver():
                 # return candidates[i+3].find_element_by_tag_name('img')
         else:
             FindElementError(DriverError)
-
+    
     def read_conf(self, config, section, action='book'):
         """
         Read in config settings

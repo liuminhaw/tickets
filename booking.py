@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 
 # Third party library imports
 # import third party libraries here
+import requests
 
 # Local application imports
 # import self defined applications here
@@ -76,7 +77,8 @@ def main():
 
     # Read config file settings
     try:
-        driver_count = config.driver_count()
+        # driver_count = config.driver_count()
+        submit_count = config.submit_count()
         execution_delta = config.execution_delta()
         submit_time = config.submit_time(data_section)
         vision_cred = config.vision_cred()
@@ -100,13 +102,16 @@ def main():
         logger.warning(logging)
         sys.exit(14)
 
-    browsers = []
-    for _ in range(driver_count):
-        browsers.append(driver.Driver())
+    # browsers = []
+    # for _ in range(driver_count):
+    #     browsers.append(driver.Driver())
+    browser = driver.Driver()
+    print(f'Submit count: {submit_count}')
 
     try:
-        for browser in browsers:
-            browser.read_conf(config, data_section)
+        browser.read_conf(config, data_section)
+        # for browser in browsers:
+        #     browser.read_conf(config, data_section)
     except conf_mod.MissingFileError as err:
         logging = 'file not found in current path: {}'.format(err.message)
         logger.warning(logging)
@@ -131,10 +136,14 @@ def main():
     logger.info('Submit time sleep: {}'.format(submit_time_sleep))
     logger.info('Submit time offset: {}'.format(submit_time_offset))
     logger.info('Driver time sleep: {}'.format(driver_time_sleep))
-    logger.info('Booking date: {}'.format(browsers[0].booking_date))
-    logger.info('Booking section: {}'.format(browsers[0].booking_section))
-    logger.info('Booking time: {}'.format(browsers[0].booking_time))
-    logger.info('Booking court: {}'.format(browsers[0].booking_court))
+    logger.info('Booking date: {}'.format(browser.booking_date))
+    logger.info('Booking section: {}'.format(browser.booking_section))
+    logger.info('Booking time: {}'.format(browser.booking_time))
+    logger.info('Booking court: {} {}'.format(browser.booking_court['court'], browser.booking_court['code']))
+    # logger.info('Booking date: {}'.format(browsers[0].booking_date))
+    # logger.info('Booking section: {}'.format(browsers[0].booking_section))
+    # logger.info('Booking time: {}'.format(browsers[0].booking_time))
+    # logger.info('Booking court: {}'.format(browsers[0].booking_court))
 
     # Start drivers on execution_time
     logger.info('Waiting for execution time...')
@@ -142,45 +151,64 @@ def main():
         time.sleep(10)
 
     # Browser preparation
-    for browser in browsers:
-        prep.sport_prep(browser, vision_cred)
+    # for browser in browsers:
+    #     prep.sport_prep(browser, vision_cred)
+    prep.sport_prep(browser, vision_cred)
 
+    browser.get_cookie(env.COOKIE_NAME)
+    session = requests.Session()
+    session.headers.update({'Cookie': f'{env.COOKIE_NAME}={browser.cookie}'})
+    booking_link = '{link}&QPid={court}&QTime={time}&PT=1&D=${date}'.format(
+        link=browser.booking_link,
+        court=browser.booking_court['code'],
+        time=browser.booking_time,
+        date=browser.booking_date
+    )
 
     # Find target booking button
-    valid_browsers = []
-    for browser in browsers:
-        try:
-            browser.find_booking_btn(env.TARGETS_SELECTOR, browser.booking_time, browser.booking_court)
-            valid_browsers.append(browser)
-        except driver.FindElementError as err:
-            logger.info(err)
-            browser.down()
+    # valid_browsers = []
+    # for browser in browsers:
+    #     try:
+    #         browser.find_booking_btn(env.TARGETS_SELECTOR, browser.booking_time, browser.booking_court)
+    #         valid_browsers.append(browser)
+    #     except driver.FindElementError as err:
+    #         logger.info(err)
+    #         browser.down()
 
-    final_browsers = []
-    for browser in valid_browsers:
-        if browser.booking_button.get_attribute('title') == '':
-            logger.info('Booking available')
-            final_browsers.append(browser)
-        else:
-            logger.info('Booking not available')
+    # final_browsers = []
+    # for browser in valid_browsers:
+    #     if browser.booking_button.get_attribute('title') == '':
+    #         logger.info('Booking available')
+    #         final_browsers.append(browser)
+    #     else:
+    #         logger.info('Booking not available')
 
     submit_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S')
     while datetime.now() < submit_time:
         time.sleep(submit_time_sleep)
 
-    print('Start', datetime.now())
-    time.sleep(submit_time_offset)
-    for browser in final_browsers:
-        browser.booking_button.click()
-        print('Clicked', datetime.now())
-        browser.accept_alert()
+    responses = []
+    for submit in range(submit_count):
+        response = session.get(booking_link)
+        responses.append(response)
         time.sleep(driver_time_sleep)
 
-    for browser in final_browsers:
-        result = browser.driver.find_element_by_id(env.ID_RESULT_MESSAGE)
-        logging = 'Result: {}'.format(result.text)
-        logger.info(logging)
-        print('')
+    # print('Start', datetime.now())
+    # time.sleep(submit_time_offset)
+    # for browser in final_browsers:
+    #     browser.booking_button.click()
+    #     print('Clicked', datetime.now())
+    #     browser.accept_alert()
+    #     time.sleep(driver_time_sleep)
+
+    # for browser in final_browsers:
+    #     result = browser.driver.find_element_by_id(env.ID_RESULT_MESSAGE)
+    #     logging = 'Result: {}'.format(result.text)
+    #     logger.info(logging)
+    #     print('')
+    logger.info(f'cookie: {browser.cookie}')
+    logger.info(f'submit url: {booking_link}')
+    print('Done.')
 
 
     # Press Enter to quit
