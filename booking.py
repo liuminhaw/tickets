@@ -6,13 +6,16 @@
 # Standard library imports
 # import standard libraries here
 import sys
+import os
 import time
 import argparse
+import re
 from datetime import datetime, timedelta
 
 # Third party library imports
 # import third party libraries here
 import requests
+from bs4 import BeautifulSoup
 
 # Local application imports
 # import self defined applications here
@@ -78,6 +81,7 @@ def main():
     # Read config file settings
     try:
         # driver_count = config.driver_count()
+        cookie_duration = config.cookie_duration()
         submit_count = config.submit_count()
         execution_delta = config.execution_delta()
         submit_time = config.submit_time(data_section)
@@ -106,7 +110,6 @@ def main():
     # for _ in range(driver_count):
     #     browsers.append(driver.Driver())
     browser = driver.Driver()
-    print(f'Submit count: {submit_count}')
 
     try:
         browser.read_conf(config, data_section)
@@ -131,6 +134,7 @@ def main():
 
     execute_time = datetime.strptime(submit_time, '%Y/%m/%d-%H:%M:%S') - timedelta(minutes=execution_delta)
 
+    logger.info('Submit count: {}'.format(submit_count))
     logger.info('Submit time: {}'.format(submit_time))
     logger.info('Execution time: {}'.format(execute_time))
     logger.info('Submit time sleep: {}'.format(submit_time_sleep))
@@ -153,17 +157,52 @@ def main():
     # Browser preparation
     # for browser in browsers:
     #     prep.sport_prep(browser, vision_cred)
-    prep.sport_prep(browser, vision_cred)
+    # prep.sport_prep(browser, vision_cred)
 
-    browser.get_cookie(env.COOKIE_NAME)
+    # browser.get_cookie(env.COOKIE_NAME)
+    # session = requests.Session()
+    # session.headers.update({'Cookie': f'{env.COOKIE_NAME}={browser.cookie}'})
+    # booking_link = '{link}&QPid={court}&QTime={time}&PT=1&D={date}'.format(
+    #     link=browser.booking_link,
+    #     court=browser.booking_court['code'],
+    #     time=browser.booking_time,
+    #     date=browser.booking_date
+    # )
+
+    # Save cookie - Save cookie for repeat usage
+    create_cookie = False
+    cookie_filepath = f'/tmp/{browser.login_user}.cookie'
+    if os.path.exists(cookie_filepath):
+        cookie_ctime = datetime.fromtimestamp(os.path.getctime(cookie_filepath))
+        now_datetime = datetime.now()
+        time_delta = now_datetime - cookie_ctime
+        if time_delta > timedelta(minutes=cookie_duration):
+            create_cookie = True
+    else:
+        create_cookie = True
+
+    if create_cookie:
+        logger.info(f'Create new cookie file: {cookie_filepath}')
+        prep.sport_prep(browser, vision_cred)
+        browser.get_cookie(env.COOKIE_NAME)
+        with open(cookie_filepath, 'w') as writer:
+            writer.write(browser.cookie)
+    else:
+        logger.info(f'Read cookie file: {cookie_filepath}')
+        with open(cookie_filepath, 'r') as reader:
+            browser.cookie = reader.readline()
+
     session = requests.Session()
     session.headers.update({'Cookie': f'{env.COOKIE_NAME}={browser.cookie}'})
-    booking_link = '{link}&QPid={court}&QTime={time}&PT=1&D=${date}'.format(
+    booking_link = '{link}&QPid={court}&QTime={time}&PT=1&D={date}'.format(
         link=browser.booking_link,
         court=browser.booking_court['code'],
         time=browser.booking_time,
         date=browser.booking_date
     )
+
+    logger.info(f'cookie: {browser.cookie}')
+    logger.info(f'submit url: {booking_link}')
 
     # Find target booking button
     # valid_browsers = []
@@ -188,10 +227,26 @@ def main():
         time.sleep(submit_time_sleep)
 
     responses = []
-    for submit in range(submit_count):
+    for _ in range(submit_count):
         response = session.get(booking_link)
-        responses.append(response)
+        responses.append(response.text)
         time.sleep(driver_time_sleep)
+
+    pattern = re.compile("tp03[^']*")
+    for index, text in enumerate(responses):
+        soup = BeautifulSoup(text, 'html.parser')
+        href = soup.find('script').string
+        match = pattern.search(href)
+        # print(soup.prettify())
+        # print(f'Href: {href}')
+        # print(f'Match: {match.group()}')
+        result_link = f'{env.DOMAIN_LINK}/{match.group()}'
+        response = session.get(result_link)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        messages = soup.find(id='ContentPlaceHolder1_Step3Info_lab').find_all('span')
+        print(f'Driver {index + 1}:')
+        for message in messages:
+            print(message.text)
 
     # print('Start', datetime.now())
     # time.sleep(submit_time_offset)
@@ -206,8 +261,7 @@ def main():
     #     logging = 'Result: {}'.format(result.text)
     #     logger.info(logging)
     #     print('')
-    logger.info(f'cookie: {browser.cookie}')
-    logger.info(f'submit url: {booking_link}')
+
     print('Done.')
 
 

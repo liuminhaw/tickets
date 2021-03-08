@@ -13,6 +13,7 @@ CONFIG_FILE = ['config.ini']
 LOGGER = logcl.PersonalLog('booking', os.path.join(os.getcwd(), 'log'))
 
 # Web DOM variables definition
+DOMAIN_LINK = 'https://scr.cyc.org.tw'
 COOKIE_NAME = 'ASP.NET_SessionId'
 
 ID_LOGIN = 'ContentPlaceHolder1_loginid'

@@ -28,6 +28,7 @@ class Config():
         self._login_link = 'login-link'
         self._booking_link = 'booking-link'
         self._vision_cred = 'vision-cred'
+        self._cookie_duration = 'cookie-duration'
 
         # self._driver_count = 'driver-count'
         self._submit_count = 'submit-count'
@@ -48,8 +49,9 @@ class Config():
 
         # Default value
         self._vision_cred_dflt = 'credential.json'
+        self._cookie_duration_dflt = '10'
 
-        self._driver_count_dflt = '1'
+        self._submit_count_dflt = '1'
         self._headless_dflt = 'False'
         self._execution_delta_dflt = '3'
         self._submit_time_sleep_dflt = '0.3'
@@ -80,7 +82,6 @@ class Config():
     def vision_cred(self):
         """
         Return config vision api credential setting in GENERAL section
-        Default setting: VISION_CRED_DFLT
         """
         cred = self._read_value(self.GENERAL, self._vision_cred, fallback_val=self._vision_cred_dflt)
         if not os.path.isfile(cred):
@@ -88,12 +89,23 @@ class Config():
 
         return cred
 
+    def cookie_duration(self):
+        """
+        Return config cookie duration setting in GENERAL section
+        """
+        _duration = int(self._read_value(self.GENERAL, self._cookie_duration, 
+            fallback_val=self._cookie_duration_dflt))
+        if _duration < 10:
+            raise OptionFormatError(self.DRIVER, _duration)
+
+        return _duration
+
     def submit_count(self):
         """
         Return config submit-count value in DRIVER section
         """
         _count = int(self._read_value(self.DRIVER, self._submit_count,
-            fallback_val=self._driver_count_dflt))
+            fallback_val=self._submit_count_dflt))
         if _count < 1 or _count > 4:
             raise OptionFormatError(self.DRIVER, _count)
 

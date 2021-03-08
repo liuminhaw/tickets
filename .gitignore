@@ -108,6 +108,7 @@ credential.json
 
 # config file
 config.ini
+config-*.ini
 
 # temporary file
 tmp/
