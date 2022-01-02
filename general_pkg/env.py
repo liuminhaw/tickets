@@ -7,7 +7,7 @@ import os
 from module_pkg import logging_class as logcl
 
 # Global variable definitions
-VERSION = 'v3.1.1'
+VERSION = 'v3.2.0'
 
 CONFIG_FILE = ['config.ini']
 LOGGER = logcl.PersonalLog('booking', os.path.join(os.getcwd(), 'log'))

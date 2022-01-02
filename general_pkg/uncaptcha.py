@@ -67,7 +67,7 @@ def _detect_text(img_path, key):
     with io.open(img_path, 'rb') as image_file:
         content = image_file.read()
 
-    image = vision.types.Image(content=content)
+    image = vision.Image(content=content)
 
     response = client.text_detection(image=image)
     texts = response.text_annotations

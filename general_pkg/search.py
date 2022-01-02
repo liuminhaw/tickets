@@ -35,11 +35,11 @@ def search(config, section):
 
     prep.sport_prep(browser, vision_cred)
 
-    candidates = browser.driver.find_elements_by_css_selector(env.TARGETS_SELECTOR)
+    candidates = browser.driver.find_elements(selenium.webdriver.common.by.By.CSS_SELECTOR, env.TARGETS_SELECTOR)
     elected = []
     for i, candidate in enumerate(candidates):
         try:
-            element = candidate.find_element_by_tag_name('img')
+            element = candidate.find_element(selenium.webdriver.common.by.By.TAG_NAME, 'img')
             if element.get_attribute('src') == env.AVAILABLE_BTN_SRC:
                 available_time = candidates[i-3].text
                 available_court = candidates[i-2].text
@@ -60,7 +60,7 @@ def search_time(config, section):
 
     elected = []
     for available_time, available_court in candidates:
-        if booking_time == available_time:
+        if booking_time == available_time[0:2]:
             elected.append((available_time, available_court))
 
     return elected
